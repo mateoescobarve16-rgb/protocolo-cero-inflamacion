@@ -2,8 +2,8 @@ import Link from 'next/link';
 
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center bg-gradient-to-b from-emerald-50 via-white to-emerald-50 px-6 text-center">
-      <div className="flex max-w-lg flex-col items-center gap-5 rounded-3xl border border-emerald-100 bg-white/90 p-10 shadow-xl shadow-emerald-900/5">
+    <main className="flex flex-1 flex-col items-center justify-center bg-[var(--background)] px-6 text-center">
+      <div className="flex max-w-lg flex-col items-center gap-5 rounded-3xl border border-emerald-100 bg-white p-10 shadow-xl shadow-emerald-900/5">
         <span className="rounded-full bg-emerald-100 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-700">
           Protocolo Cero Inflamación
         </span>

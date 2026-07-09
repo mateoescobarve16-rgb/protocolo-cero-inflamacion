@@ -1,4 +1,5 @@
 import type { Pregunta } from '@/lib/quiz/preguntas';
+import { UserIcon, EnvelopeIcon } from './Icons';
 
 type ValorRespuesta = string | string[];
 
@@ -24,29 +25,38 @@ function CheckIcon() {
 
 export function PreguntaField({ pregunta, valor, onChange, onEnter, error }: PreguntaFieldProps) {
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-balance text-xl font-semibold leading-snug text-neutral-900 sm:text-2xl">
+    <div className="flex flex-col gap-3">
+      <h2 className="text-balance text-lg font-semibold leading-snug text-neutral-900 sm:text-2xl">
         {pregunta.texto}
       </h2>
 
       {pregunta.tipo === 'texto' && (
-        <input
-          type={pregunta.id === 'email' ? 'email' : 'text'}
-          value={(valor as string) ?? ''}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') onEnter?.();
-          }}
-          placeholder={pregunta.placeholder}
-          autoFocus
-          className={`rounded-2xl border-2 bg-white px-5 py-4 text-lg text-neutral-800 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 ${
-            error ? 'border-red-300' : 'border-neutral-200'
-          }`}
-        />
+        <div className="relative">
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400">
+            {pregunta.id === 'email' ? (
+              <EnvelopeIcon className="h-5 w-5" />
+            ) : (
+              <UserIcon className="h-5 w-5" />
+            )}
+          </span>
+          <input
+            type={pregunta.id === 'email' ? 'email' : 'text'}
+            value={(valor as string) ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') onEnter?.();
+            }}
+            placeholder={pregunta.placeholder}
+            autoFocus
+            className={`w-full rounded-2xl border-2 bg-white py-4 pl-12 pr-5 text-lg text-neutral-800 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 ${
+              error ? 'border-red-300' : 'border-neutral-200'
+            }`}
+          />
+        </div>
       )}
 
       {pregunta.tipo === 'single' && (
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-2">
           {pregunta.opciones?.map((opcion) => {
             const seleccionada = valor === opcion.id;
             return (
@@ -55,7 +65,7 @@ export function PreguntaField({ pregunta, valor, onChange, onEnter, error }: Pre
                 type="button"
                 aria-pressed={seleccionada}
                 onClick={() => onChange(opcion.id)}
-                className={`flex items-center justify-between gap-3 rounded-2xl border-2 px-5 py-3.5 text-left text-[15px] leading-snug transition-all active:scale-[0.98] sm:text-base ${
+                className={`flex items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3 text-left text-[15px] leading-snug transition-all active:scale-[0.98] sm:px-5 sm:text-base ${
                   seleccionada
                     ? 'border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm shadow-emerald-100'
                     : 'border-neutral-200 bg-white text-neutral-700 hover:border-emerald-300 hover:bg-emerald-50/40'
@@ -76,7 +86,7 @@ export function PreguntaField({ pregunta, valor, onChange, onEnter, error }: Pre
       )}
 
       {pregunta.tipo === 'multi' && (
-        <div className="flex flex-col gap-2.5">
+        <div className="flex flex-col gap-2">
           {pregunta.opciones?.map((opcion) => {
             const seleccionadas = (valor as string[]) ?? [];
             const seleccionada = seleccionadas.includes(opcion.id);
@@ -103,7 +113,7 @@ export function PreguntaField({ pregunta, valor, onChange, onEnter, error }: Pre
                 type="button"
                 aria-pressed={seleccionada}
                 onClick={alternar}
-                className={`flex items-center justify-between gap-3 rounded-2xl border-2 px-5 py-3.5 text-left text-[15px] leading-snug transition-all active:scale-[0.98] sm:text-base ${
+                className={`flex items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3 text-left text-[15px] leading-snug transition-all active:scale-[0.98] sm:px-5 sm:text-base ${
                   seleccionada
                     ? 'border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm shadow-emerald-100'
                     : 'border-neutral-200 bg-white text-neutral-700 hover:border-emerald-300 hover:bg-emerald-50/40'
