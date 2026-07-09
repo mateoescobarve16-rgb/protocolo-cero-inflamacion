@@ -30,5 +30,6 @@ export async function POST(req: NextRequest) {
     reporte_texto,
     requiere_derivacion: !resultado.calculado,
     nota_condicion_previa: resultado.calculado ? resultado.nota_condicion_previa : false,
+    perfil: resultado.calculado ? resultado.perfil : undefined,
   });
 }

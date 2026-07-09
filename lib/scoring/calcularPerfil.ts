@@ -1,4 +1,5 @@
 import { PESOS, SENALES_ALARMA, UMBRAL_MINIMO, DIFERENCIA_HIBRIDO } from './pesos';
+import { etiquetaOpcion } from '../quiz/preguntas';
 import type { PerfilLetra, Puntajes, Respuestas, ResultadoPerfil } from './tipos';
 
 function puntajeP9(p9: string[], p10: string): Partial<Record<'A' | 'E', number>> {
@@ -77,10 +78,10 @@ export function calcularPerfil(respuestas: Respuestas): ResultadoPerfil {
     calculado: true,
     contexto: {
       nombre: respuestas.nombre,
-      sintomaPrincipal: respuestas.p3,
-      tiempoSintoma: respuestas.p4,
+      sintomaPrincipal: etiquetaOpcion('p3', respuestas.p3),
+      tiempoSintoma: etiquetaOpcion('p4', respuestas.p4),
       evolucion: respuestas.p5,
-      disparadores: respuestas.p9,
+      disparadores: respuestas.p9.map((d) => etiquetaOpcion('p9', d)),
       agua: respuestas.p12,
       alcohol: respuestas.p13,
     },

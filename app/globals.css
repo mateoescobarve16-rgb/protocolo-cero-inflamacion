@@ -30,3 +30,32 @@ body {
 .animate-fade-slide-in {
   animation: fade-slide-in 0.35s ease-out;
 }
+
+@keyframes barra-pausa {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-barra-pausa {
+  animation: barra-pausa linear forwards;
+}
+
+@keyframes check-pop {
+  from {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-check-pop {
+  animation: check-pop 0.25s ease-out;
+}
+

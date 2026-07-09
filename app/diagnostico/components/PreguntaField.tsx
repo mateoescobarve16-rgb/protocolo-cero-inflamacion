@@ -1,4 +1,5 @@
 import type { Pregunta } from '@/lib/quiz/preguntas';
+import { CheckIcon } from './Icons';
 
 type ValorRespuesta = string | string[];
 
@@ -7,18 +8,6 @@ interface PreguntaFieldProps {
   valor: ValorRespuesta | undefined;
   onChange: (valor: ValorRespuesta) => void;
   error?: boolean;
-}
-
-function CheckIcon() {
-  return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 shrink-0">
-      <path
-        fillRule="evenodd"
-        d="M16.704 5.29a1 1 0 010 1.415l-7.404 7.404a1 1 0 01-1.415 0L3.296 9.52a1 1 0 111.415-1.414l3.475 3.474 6.696-6.696a1 1 0 011.415 0z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
 }
 
 export function PreguntaField({ pregunta, valor, onChange, error }: PreguntaFieldProps) {
@@ -50,7 +39,7 @@ export function PreguntaField({ pregunta, valor, onChange, error }: PreguntaFiel
                     seleccionada ? 'bg-emerald-500 text-white' : 'bg-transparent text-transparent'
                   }`}
                 >
-                  <CheckIcon />
+                  <CheckIcon className="h-5 w-5 shrink-0" />
                 </span>
               </button>
             );
@@ -98,7 +87,7 @@ export function PreguntaField({ pregunta, valor, onChange, error }: PreguntaFiel
                     seleccionada ? 'bg-emerald-500 text-white' : 'bg-transparent text-transparent'
                   }`}
                 >
-                  <CheckIcon />
+                  <CheckIcon className="h-5 w-5 shrink-0" />
                 </span>
               </button>
             );

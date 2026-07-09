@@ -284,3 +284,8 @@ export const TODAS_LAS_PREGUNTAS_IDS = BLOQUES.flatMap((b) => b.preguntaIds);
 export function obtenerBloqueDePregunta(preguntaId: string): Bloque {
   return BLOQUES.find((b) => b.preguntaIds.includes(preguntaId))!;
 }
+
+/** Traduce el id interno de una opción (ej. "menos_1_mes") a su texto legible. */
+export function etiquetaOpcion(preguntaId: string, valor: string): string {
+  return PREGUNTAS[preguntaId]?.opciones?.find((o) => o.id === valor)?.label ?? valor;
+}

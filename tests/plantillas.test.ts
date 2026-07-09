@@ -71,4 +71,28 @@ describe('generarReporte', () => {
     const texto = generarReporte(resultado);
     expect(texto).toContain('consultes con un médico');
   });
+
+  it('agrega la nota de hidratación cuando el consumo de agua es bajo', () => {
+    const resultado = calcularPerfil(baseRespuestas({ p12: 'menos_1L' }));
+    const texto = generarReporte(resultado);
+    expect(texto).toContain('consumo de agua está por debajo de lo recomendado');
+  });
+
+  it('no agrega la nota de hidratación cuando el consumo de agua es adecuado', () => {
+    const resultado = calcularPerfil(baseRespuestas({ p12: '1.5_a_2.5L' }));
+    const texto = generarReporte(resultado);
+    expect(texto).not.toContain('consumo de agua está por debajo de lo recomendado');
+  });
+
+  it('agrega la nota de alcohol cuando el consumo es frecuente', () => {
+    const resultado = calcularPerfil(baseRespuestas({ p13: '3_mas_semana' }));
+    const texto = generarReporte(resultado);
+    expect(texto).toContain('El alcohol que reportaste también suma carga');
+  });
+
+  it('referencia cómo ha evolucionado el síntoma en el cuerpo del reporte', () => {
+    const resultado = calcularPerfil(baseRespuestas({ p5: 'empeora' }));
+    const texto = generarReporte(resultado);
+    expect(texto).toContain('ha ido empeorando con el tiempo');
+  });
 });

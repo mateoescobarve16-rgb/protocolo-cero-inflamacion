@@ -129,6 +129,18 @@ export function WineIcon({ className }: IconProps) {
   );
 }
 
+export function CheckIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="currentColor" className={className}>
+      <path
+        fillRule="evenodd"
+        d="M16.704 5.29a1 1 0 010 1.415l-7.404 7.404a1 1 0 01-1.415 0L3.296 9.52a1 1 0 111.415-1.414l3.475 3.474 6.696-6.696a1 1 0 011.415 0z"
+        clipRule="evenodd"
+      />
+    </svg>
+  );
+}
+
 export function EnvelopeIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>

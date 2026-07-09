@@ -1,23 +1,34 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { PREGUNTAS } from '@/lib/quiz/preguntas';
+import { PREGUNTAS, etiquetaOpcion } from '@/lib/quiz/preguntas';
 import { PASOS, IDS_HABITOS_GENERALES, tituloDePaso } from '@/lib/quiz/pasos';
+import { nombreAmigablePerfil } from '@/lib/quiz/perfilLabels';
 import { PreguntaField } from './components/PreguntaField';
 import { DatosPersonalesForm } from './components/DatosPersonalesForm';
 import { HabitosGeneralesForm } from './components/HabitosGeneralesForm';
-import { ResultadoCarousel } from './components/ResultadoCarousel';
+import { ResultadoCarousel, type ResumenDiagnostico } from './components/ResultadoCarousel';
 import { ProgressBar } from './components/ProgressBar';
 import { iconoDePaso } from './components/pasoIconos';
+import { TransicionScreen, ProcesandoScreen, RevelacionScreen } from './components/CierreScreens';
 import { ArrowLeftIcon, ArrowRightIcon, SparklesIcon } from './components/Icons';
 
 type ValorRespuesta = string | string[];
-type Etapa = 'bienvenida' | 'pregunta' | 'tip' | 'enviando' | 'resultado' | 'error';
+type Etapa =
+  | 'bienvenida'
+  | 'pregunta'
+  | 'tip'
+  | 'transicion'
+  | 'procesando'
+  | 'revelado'
+  | 'resultado'
+  | 'error';
 
 interface ResultadoAPI {
   reporte_texto: string;
   requiere_derivacion: boolean;
   nota_condicion_previa: boolean;
+  perfil?: string;
 }
 
 const TOTAL_PASOS = PASOS.length;
@@ -43,12 +54,18 @@ function camposDelPaso(paso: (typeof PASOS)[number]): string[] {
   return [paso.preguntaId];
 }
 
+function etiquetaResumen(preguntaId: string, valor: unknown): string {
+  if (typeof valor !== 'string' || !valor) return '—';
+  return etiquetaOpcion(preguntaId, valor);
+}
+
 export default function DiagnosticoPage() {
   const [etapa, setEtapa] = useState<Etapa>('bienvenida');
   const [pasoIndex, setPasoIndex] = useState(0);
   const [respuestas, setRespuestas] = useState<Record<string, ValorRespuesta>>({});
   const [erroresCampos, setErroresCampos] = useState<string[]>([]);
   const [resultado, setResultado] = useState<ResultadoAPI | null>(null);
+  const [fetchListo, setFetchListo] = useState(false);
   const [tipsVistos, setTipsVistos] = useState<Set<number>>(new Set());
 
   const pasoActual = PASOS[pasoIndex];
@@ -79,8 +96,8 @@ export default function DiagnosticoPage() {
   // Cancela cualquier auto-avance pendiente si el usuario navega antes de que dispare.
   useEffect(() => limpiarAutoAvance, [pasoIndex]);
 
-  async function enviarDiagnostico() {
-    setEtapa('enviando');
+  async function iniciarCalculo() {
+    setFetchListo(false);
     try {
       const res = await fetch('/api/calcular-perfil', {
         method: 'POST',
@@ -92,7 +109,7 @@ export default function DiagnosticoPage() {
 
       const data: ResultadoAPI = await res.json();
       setResultado(data);
-      setEtapa('resultado');
+      setFetchListo(true);
     } catch {
       setEtapa('error');
     }
@@ -106,7 +123,8 @@ export default function DiagnosticoPage() {
     }
 
     if (pasoIndex === TOTAL_PASOS - 1) {
-      enviarDiagnostico();
+      setEtapa('transicion');
+      iniciarCalculo();
       return;
     }
 
@@ -137,6 +155,10 @@ export default function DiagnosticoPage() {
     setEtapa('pregunta');
   }
 
+  function alTerminarProcesamiento() {
+    setEtapa(resultado?.requiere_derivacion ? 'resultado' : 'revelado');
+  }
+
   function actualizarRespuesta(campoId: string, valor: ValorRespuesta, autoAvanzar = false) {
     setRespuestas((prev) => ({ ...prev, [campoId]: valor }));
     setErroresCampos((prev) => prev.filter((id) => id !== campoId));
@@ -145,6 +167,19 @@ export default function DiagnosticoPage() {
       autoAvanzarTimeout.current = setTimeout(() => irSiguienteRef.current(), 380);
     }
   }
+
+  const nombre = (respuestas.nombre as string) ?? '';
+
+  const resumen: ResumenDiagnostico | undefined =
+    resultado && !resultado.requiere_derivacion
+      ? {
+          sintomaPrincipal: etiquetaResumen('p3', respuestas.p3),
+          tiempoSintoma: etiquetaResumen('p4', respuestas.p4),
+          nivelEstres: etiquetaResumen('p17', respuestas.p17),
+          horasSueno: etiquetaResumen('p18', respuestas.p18),
+          patronDominante: resultado.perfil ? nombreAmigablePerfil(resultado.perfil) : '—',
+        }
+      : undefined;
 
   return (
     <main className="flex h-dvh flex-col items-center justify-center overflow-hidden bg-[var(--background)] px-4 py-4">
@@ -182,26 +217,15 @@ export default function DiagnosticoPage() {
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-lg shadow-emerald-600/30">
               <SparklesIcon className="h-7 w-7" />
             </span>
-            <h2 className="text-xl font-bold text-neutral-900">
-              {TIPS[pasoIndex].titulo((respuestas.nombre as string) ?? '')}
-            </h2>
+            <h2 className="text-xl font-bold text-neutral-900">{TIPS[pasoIndex].titulo(nombre)}</h2>
             <p className="text-neutral-600">{TIPS[pasoIndex].cuerpo}</p>
-            <button
-              type="button"
-              onClick={continuarDesdeTip}
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-emerald-600 px-8 py-3.5 font-semibold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-[0.98]"
-            >
-              Continuar
-              <ArrowRightIcon className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={irAtras}
-              className="flex items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-neutral-400 transition hover:bg-neutral-100 hover:text-neutral-600"
-            >
-              <ArrowLeftIcon className="h-4 w-4" />
-              Atrás
-            </button>
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-emerald-900/10">
+              <div
+                className="animate-barra-pausa h-full rounded-full bg-emerald-600"
+                style={{ animationDuration: '2000ms' }}
+                onAnimationEnd={continuarDesdeTip}
+              />
+            </div>
           </div>
         )}
 
@@ -285,17 +309,27 @@ export default function DiagnosticoPage() {
           </div>
         )}
 
-        {etapa === 'enviando' && (
-          <div className="flex flex-col items-center gap-4 rounded-3xl border border-emerald-100 bg-white p-12 text-neutral-500 shadow-xl shadow-emerald-900/5">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
-            <p>Calculando tu perfil funcional...</p>
-          </div>
+        {etapa === 'transicion' && (
+          <TransicionScreen nombre={nombre} onDone={() => setEtapa('procesando')} />
+        )}
+
+        {etapa === 'procesando' && (
+          <ProcesandoScreen nombre={nombre} listo={fetchListo} onDone={alTerminarProcesamiento} />
+        )}
+
+        {etapa === 'revelado' && resultado && (
+          <RevelacionScreen
+            nombre={nombre}
+            perfilLabel={resultado.perfil ? nombreAmigablePerfil(resultado.perfil) : 'tu patrón funcional'}
+            onContinuar={() => setEtapa('resultado')}
+          />
         )}
 
         {etapa === 'resultado' && resultado && (
           <ResultadoCarousel
             reporteTexto={resultado.reporte_texto}
             requiereDerivacion={resultado.requiere_derivacion}
+            resumen={resumen}
           />
         )}
 
