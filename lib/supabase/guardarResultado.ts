@@ -8,8 +8,8 @@ export async function guardarResultado(
 ) {
   const supabase = crearClienteSupabase();
   const { error } = await supabase.from('diagnosticos').insert({
-    nombre: respuestas.nombre,
-    email: respuestas.email,
+    nombre: respuestas.nombre.trim(),
+    email: respuestas.email.trim(),
     respuestas,
     resultado,
     reporte_texto,

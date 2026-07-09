@@ -1,10 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { PREGUNTAS, TODAS_LAS_PREGUNTAS_IDS, obtenerBloqueDePregunta } from '@/lib/quiz/preguntas';
+import { PREGUNTAS } from '@/lib/quiz/preguntas';
+import { PASOS, IDS_HABITOS_GENERALES, tituloDePaso } from '@/lib/quiz/pasos';
 import { PreguntaField } from './components/PreguntaField';
+import { DatosPersonalesForm } from './components/DatosPersonalesForm';
+import { HabitosGeneralesForm } from './components/HabitosGeneralesForm';
+import { ResultadoCarousel } from './components/ResultadoCarousel';
 import { ProgressBar } from './components/ProgressBar';
-import { ICONO_POR_BLOQUE } from './components/bloqueIconos';
+import { iconoDePaso } from './components/pasoIconos';
 import { ArrowLeftIcon, ArrowRightIcon, SparklesIcon } from './components/Icons';
 
 type ValorRespuesta = string | string[];
@@ -16,40 +20,51 @@ interface ResultadoAPI {
   nota_condicion_previa: boolean;
 }
 
-const TOTAL_PREGUNTAS = TODAS_LAS_PREGUNTAS_IDS.length;
+const TOTAL_PASOS = PASOS.length;
 
-// Pantallas de "tip" motivacional que se muestran justo antes del índice indicado (una sola vez).
+// Pantallas de "tip" que se muestran justo antes del índice indicado (una sola vez): breves pausas
+// entre secciones, no promesas de resultado, mientras seguimos recopilando datos.
 const TIPS: Record<number, { titulo: (nombre: string) => string; cuerpo: string }> = {
-  2: {
+  1: {
     titulo: (nombre) => `${nombre || 'Hola'}, antes de seguir`,
     cuerpo:
       'La mayoría de los diagnósticos genéricos fallan porque no consideran tu caso particular. Cada respuesta que nos das nos ayuda a entender exactamente qué le pasa a tu cuerpo.',
   },
-  13: {
+  10: {
     titulo: (nombre) => `Vas muy bien, ${nombre || 'vamos'}`,
     cuerpo:
-      'Ya pasaste la mitad. Las siguientes preguntas nos ayudan a afinar tu perfil hormonal y de estrés — no hay respuestas correctas o incorrectas, solo sé honesta.',
+      'Ya vas por la mitad. Las siguientes preguntas nos ayudan a afinar tu perfil hormonal y de estrés — no hay respuestas correctas o incorrectas, solo sé honesta.',
   },
 };
+
+function camposDelPaso(paso: (typeof PASOS)[number]): string[] {
+  if (paso.tipo === 'datos-personales') return ['nombre', 'email'];
+  if (paso.tipo === 'habitos-generales') return [...IDS_HABITOS_GENERALES];
+  return [paso.preguntaId];
+}
 
 export default function DiagnosticoPage() {
   const [etapa, setEtapa] = useState<Etapa>('bienvenida');
   const [pasoIndex, setPasoIndex] = useState(0);
   const [respuestas, setRespuestas] = useState<Record<string, ValorRespuesta>>({});
-  const [error, setError] = useState(false);
+  const [erroresCampos, setErroresCampos] = useState<string[]>([]);
   const [resultado, setResultado] = useState<ResultadoAPI | null>(null);
   const [tipsVistos, setTipsVistos] = useState<Set<number>>(new Set());
 
-  const preguntaId = TODAS_LAS_PREGUNTAS_IDS[pasoIndex];
-  const pregunta = PREGUNTAS[preguntaId];
-  const bloque = obtenerBloqueDePregunta(preguntaId);
-  const IconoBloque = ICONO_POR_BLOQUE[bloque.id];
+  const pasoActual = PASOS[pasoIndex];
 
-  const valorActual = respuestas[preguntaId];
-  const respondida =
-    pregunta.tipo === 'multi'
-      ? Array.isArray(valorActual) && valorActual.length > 0
-      : typeof valorActual === 'string' && valorActual.trim() !== '';
+  function validarCampo(id: string): boolean {
+    const pregunta = PREGUNTAS[id];
+    const valor = respuestas[id];
+    if (pregunta.tipo === 'multi') return Array.isArray(valor) && valor.length > 0;
+    return typeof valor === 'string' && valor.trim() !== '';
+  }
+
+  function camposFaltantes(paso: (typeof PASOS)[number]): string[] {
+    return camposDelPaso(paso).filter((id) => !validarCampo(id));
+  }
+
+  const respondida = camposFaltantes(pasoActual).length === 0;
 
   const irSiguienteRef = useRef<() => void>(() => {});
   const autoAvanzarTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -61,7 +76,7 @@ export default function DiagnosticoPage() {
     }
   }
 
-  // Cancela cualquier auto-avance pendiente si el usuario navega (ej. con "Atrás") antes de que dispare.
+  // Cancela cualquier auto-avance pendiente si el usuario navega antes de que dispare.
   useEffect(() => limpiarAutoAvance, [pasoIndex]);
 
   async function enviarDiagnostico() {
@@ -84,25 +99,20 @@ export default function DiagnosticoPage() {
   }
 
   function irSiguiente() {
-    const valor = respuestas[preguntaId];
-    const invalido =
-      pregunta.tipo === 'multi'
-        ? !Array.isArray(valor) || valor.length === 0
-        : typeof valor !== 'string' || valor.trim() === '';
-
-    if (invalido) {
-      setError(true);
+    const faltantes = camposFaltantes(pasoActual);
+    if (faltantes.length > 0) {
+      setErroresCampos(faltantes);
       return;
     }
 
-    if (pasoIndex === TOTAL_PREGUNTAS - 1) {
+    if (pasoIndex === TOTAL_PASOS - 1) {
       enviarDiagnostico();
       return;
     }
 
     const siguiente = pasoIndex + 1;
     setPasoIndex(siguiente);
-    setError(false);
+    setErroresCampos([]);
     setEtapa(TIPS[siguiente] && !tipsVistos.has(siguiente) ? 'tip' : 'pregunta');
   }
 
@@ -118,7 +128,7 @@ export default function DiagnosticoPage() {
       return;
     }
     setPasoIndex((i) => i - 1);
-    setError(false);
+    setErroresCampos([]);
     setEtapa('pregunta');
   }
 
@@ -127,9 +137,9 @@ export default function DiagnosticoPage() {
     setEtapa('pregunta');
   }
 
-  function actualizarRespuesta(valor: ValorRespuesta, autoAvanzar = false) {
-    setRespuestas((prev) => ({ ...prev, [preguntaId]: valor }));
-    setError(false);
+  function actualizarRespuesta(campoId: string, valor: ValorRespuesta, autoAvanzar = false) {
+    setRespuestas((prev) => ({ ...prev, [campoId]: valor }));
+    setErroresCampos((prev) => prev.filter((id) => id !== campoId));
     if (autoAvanzar) {
       limpiarAutoAvance();
       autoAvanzarTimeout.current = setTimeout(() => irSiguienteRef.current(), 380);
@@ -140,7 +150,7 @@ export default function DiagnosticoPage() {
     <main className="flex h-dvh flex-col items-center justify-center overflow-hidden bg-[var(--background)] px-4 py-4">
       <div className="flex w-full max-w-md flex-col">
         {(etapa === 'pregunta' || etapa === 'tip') && (
-          <ProgressBar pasoActual={pasoIndex + 1} totalPasos={TOTAL_PREGUNTAS} />
+          <ProgressBar pasoActual={pasoIndex + 1} totalPasos={TOTAL_PASOS} />
         )}
 
         {etapa === 'bienvenida' && (
@@ -197,25 +207,58 @@ export default function DiagnosticoPage() {
 
         {etapa === 'pregunta' && (
           <div
-            key={preguntaId}
+            key={pasoIndex}
             className="animate-fade-slide-in flex max-h-[calc(100dvh-5.5rem)] flex-col gap-3 overflow-y-auto rounded-3xl border border-emerald-100 bg-white p-5 shadow-xl shadow-emerald-900/5 sm:p-8"
           >
-            <div className="flex items-center gap-2.5">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
-                <IconoBloque className="h-4 w-4" />
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-wide text-emerald-600">
-                {bloque.titulo}
-              </span>
-            </div>
+            {pasoActual.tipo === 'pregunta' && (
+              <>
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                    {iconoDePaso(pasoActual, 'h-4 w-4')}
+                  </span>
+                  <span className="text-xs font-semibold uppercase tracking-wide text-emerald-600">
+                    {tituloDePaso(pasoActual)}
+                  </span>
+                </div>
+                <PreguntaField
+                  pregunta={PREGUNTAS[pasoActual.preguntaId]}
+                  valor={respuestas[pasoActual.preguntaId]}
+                  onChange={(valor) =>
+                    actualizarRespuesta(
+                      pasoActual.preguntaId,
+                      valor,
+                      PREGUNTAS[pasoActual.preguntaId].tipo === 'single'
+                    )
+                  }
+                  error={erroresCampos.includes(pasoActual.preguntaId)}
+                />
+              </>
+            )}
 
-            <PreguntaField
-              pregunta={pregunta}
-              valor={respuestas[preguntaId]}
-              onChange={(valor) => actualizarRespuesta(valor, pregunta.tipo === 'single')}
-              onEnter={irSiguiente}
-              error={error}
-            />
+            {pasoActual.tipo === 'datos-personales' && (
+              <DatosPersonalesForm
+                nombre={(respuestas.nombre as string) ?? ''}
+                email={(respuestas.email as string) ?? ''}
+                onChangeNombre={(v) => actualizarRespuesta('nombre', v)}
+                onChangeEmail={(v) => actualizarRespuesta('email', v)}
+                onEnter={irSiguiente}
+                errorNombre={erroresCampos.includes('nombre')}
+                errorEmail={erroresCampos.includes('email')}
+              />
+            )}
+
+            {pasoActual.tipo === 'habitos-generales' && (
+              <HabitosGeneralesForm
+                valores={{
+                  p12: respuestas.p12 as string | undefined,
+                  p13: respuestas.p13 as string | undefined,
+                  p18: respuestas.p18 as string | undefined,
+                  p19: respuestas.p19 as string | undefined,
+                }}
+                onChange={(id, v) => actualizarRespuesta(id, v)}
+                errores={erroresCampos}
+              />
+            )}
 
             <div className="flex items-center justify-between border-t border-neutral-100 pt-3">
               <button
@@ -235,7 +278,7 @@ export default function DiagnosticoPage() {
                     : 'cursor-not-allowed bg-emerald-100 text-emerald-400 shadow-none'
                 }`}
               >
-                {pasoIndex === TOTAL_PREGUNTAS - 1 ? 'Ver mi resultado' : 'Continuar'}
+                {pasoIndex === TOTAL_PASOS - 1 ? 'Ver mi resultado' : 'Continuar'}
                 <ArrowRightIcon className="h-4 w-4" />
               </button>
             </div>
@@ -250,19 +293,10 @@ export default function DiagnosticoPage() {
         )}
 
         {etapa === 'resultado' && resultado && (
-          <div
-            className={`flex max-h-[calc(100dvh-2rem)] flex-col gap-4 overflow-y-auto rounded-3xl border p-6 shadow-xl sm:p-8 ${
-              resultado.requiere_derivacion
-                ? 'border-amber-200 bg-amber-50 shadow-amber-900/5'
-                : 'border-emerald-100 bg-white shadow-emerald-900/5'
-            }`}
-          >
-            {resultado.reporte_texto.split('\n\n').map((parrafo, i) => (
-              <p key={i} className="whitespace-pre-line leading-relaxed text-neutral-700">
-                {parrafo}
-              </p>
-            ))}
-          </div>
+          <ResultadoCarousel
+            reporteTexto={resultado.reporte_texto}
+            requiereDerivacion={resultado.requiere_derivacion}
+          />
         )}
 
         {etapa === 'error' && (

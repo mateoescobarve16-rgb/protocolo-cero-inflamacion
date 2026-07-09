@@ -22,3 +22,6 @@ create policy "Cualquiera puede insertar un diagnostico"
 -- No se crea policy de SELECT/UPDATE/DELETE para "anon": nadie puede leer ni modificar
 -- diagnósticos ajenos desde el cliente. Para consultarlos, usa el dashboard de Supabase
 -- (Table Editor) o una service role key desde un entorno de confianza.
+--
+-- Ver migration_002_buscar_por_email.sql para la función que habilita "Ver mi plan"
+-- (búsqueda puntual por correo, sin abrir el resto de la tabla).

@@ -104,6 +104,31 @@ export function ArrowRightIcon({ className }: IconProps) {
   );
 }
 
+export function ChevronDownIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
+
+export function DropletIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M12 3s6 6.8 6 11a6 6 0 01-12 0c0-4.2 6-11 6-11z" />
+    </svg>
+  );
+}
+
+export function WineIcon({ className }: IconProps) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M7 3h10l-1 7a4 4 0 01-8 0L7 3z" />
+      <path d="M12 14v7M8.5 21h7" />
+    </svg>
+  );
+}
+
 export function EnvelopeIcon({ className }: IconProps) {
   return (
     <svg {...base} className={className}>
