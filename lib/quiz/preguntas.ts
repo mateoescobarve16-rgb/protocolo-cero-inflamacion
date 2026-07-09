@@ -280,3 +280,7 @@ export const BLOQUES: Bloque[] = [
 ];
 
 export const TODAS_LAS_PREGUNTAS_IDS = BLOQUES.flatMap((b) => b.preguntaIds);
+
+export function obtenerBloqueDePregunta(preguntaId: string): Bloque {
+  return BLOQUES.find((b) => b.preguntaIds.includes(preguntaId))!;
+}
