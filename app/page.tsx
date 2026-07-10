@@ -51,7 +51,7 @@ export default function Home() {
               Descubre tu patrón funcional
             </h1>
             <p className="text-neutral-600">
-              Un diagnóstico de preguntas para entender tu patrón dominante y recibir un
+              Un cuestionario funcional para entender tu patrón dominante y recibir un
               reporte personalizado que oriente tu protocolo.
             </p>
             <div className="flex w-full flex-col gap-3 sm:flex-row">
@@ -67,7 +67,7 @@ export default function Home() {
                 onClick={() => setVista('buscando-email')}
                 className="flex flex-1 items-center justify-center gap-2 rounded-full border-2 border-emerald-200 px-6 py-3.5 font-semibold text-emerald-700 transition hover:bg-emerald-50 active:scale-[0.98]"
               >
-                Ver mi plan
+                Ver mi resultado
               </button>
             </div>
           </div>
@@ -79,9 +79,9 @@ export default function Home() {
             className="flex flex-col gap-4 rounded-3xl border border-emerald-100 bg-white p-8 text-left shadow-xl shadow-emerald-900/5"
           >
             <div>
-              <h2 className="text-lg font-bold text-neutral-900">Ver mi plan</h2>
+              <h2 className="text-lg font-bold text-neutral-900">Ver mi resultado</h2>
               <p className="text-sm text-neutral-500">
-                Escribe el correo con el que hiciste tu diagnóstico.
+                Escribe el correo con el que hiciste tu cuestionario.
               </p>
             </div>
             <div className="relative">
@@ -119,7 +119,7 @@ export default function Home() {
         {vista === 'buscando' && (
           <div className="flex flex-col items-center gap-4 rounded-3xl border border-emerald-100 bg-white p-12 text-neutral-500 shadow-xl shadow-emerald-900/5">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-600 border-t-transparent" />
-            <p>Buscando tu plan...</p>
+            <p>Buscando tu resultado...</p>
           </div>
         )}
 
@@ -130,7 +130,7 @@ export default function Home() {
         {vista === 'error' && (
           <div className="flex flex-col items-center gap-4 rounded-3xl border border-neutral-200 bg-white p-10 text-center shadow-xl">
             <p className="text-neutral-700">
-              Algo salió mal al buscar tu plan. Por favor intenta de nuevo.
+              Algo salió mal al buscar tu resultado. Por favor intenta de nuevo.
             </p>
             <button
               type="button"
@@ -144,7 +144,7 @@ export default function Home() {
 
         {vista === 'no-encontrado' && (
           <div className="flex flex-col items-center gap-4 rounded-3xl border border-neutral-200 bg-white p-10 text-center shadow-xl">
-            <p className="text-neutral-700">No encontramos un diagnóstico con ese correo.</p>
+            <p className="text-neutral-700">No encontramos un resultado con ese correo.</p>
             <div className="flex gap-3">
               <button
                 type="button"
@@ -157,7 +157,7 @@ export default function Home() {
                 href="/diagnostico"
                 className="rounded-full bg-emerald-600 px-6 py-2.5 font-semibold text-white transition hover:bg-emerald-700"
               >
-                Hacer el diagnóstico
+                Hacer el cuestionario
               </Link>
             </div>
           </div>

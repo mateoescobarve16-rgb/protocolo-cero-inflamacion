@@ -13,6 +13,7 @@ export interface Respuestas {
   p9: string[];
   p9_otro?: string;
   p10: string;
+  p10_otro?: string;
   p11: string;
   p12: string;
   p13: string;

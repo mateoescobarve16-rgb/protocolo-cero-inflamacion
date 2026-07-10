@@ -46,7 +46,7 @@ export const PREGUNTAS: Record<string, Pregunta> = {
       { id: 'cansancio', label: 'Cansancio constante' },
       { id: 'estrenimiento', label: 'Estreñimiento o tránsito irregular' },
       { id: 'piel_opaca', label: 'Piel opaca o resequedad' },
-      { id: 'dificultad_bajar_peso', label: 'Hinchazón o retención en zonas específicas' },
+      { id: 'dificultad_bajar_peso', label: 'Retención de líquidos en zonas específicas' },
     ],
   },
   p4: {
@@ -124,7 +124,7 @@ export const PREGUNTAS: Record<string, Pregunta> = {
     opciones: [
       { id: 'intolerancia_lactosa', label: 'Sí, a lácteos (intolerancia a la lactosa)' },
       { id: 'celiaquia', label: 'Sí, al gluten (celiaquía o sensibilidad)' },
-      { id: 'otro', label: 'Sí, a otro alimento' },
+      { id: 'otro', label: 'Sí, a otro alimento', permiteEspecificar: true },
       { id: 'no_diagnosticada', label: 'No tengo ninguna diagnosticada' },
     ],
   },
@@ -187,7 +187,7 @@ export const PREGUNTAS: Record<string, Pregunta> = {
     texto: '¿Notas hinchazón o retención en alguna zona del cuerpo en particular?',
     tipo: 'single',
     opciones: [
-      { id: 'zonas_especificas', label: 'Sí, en zonas específicas (abdomen, piernas)' },
+      { id: 'zonas_especificas', label: 'Sí, en zonas específicas (abdomen, piernas, u otras)' },
       { id: 'dificultad_generalizada', label: 'Sí, de forma generalizada' },
       { id: 'no_preocupa', label: 'No, no es algo que note' },
     ],

@@ -38,26 +38,37 @@ export function PreguntaField({
           {pregunta.opciones?.map((opcion) => {
             const seleccionada = valor === opcion.id;
             return (
-              <button
-                key={opcion.id}
-                type="button"
-                aria-pressed={seleccionada}
-                onClick={() => onChange(opcion.id)}
-                className={`flex items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3 text-left text-[15px] leading-snug transition-all active:scale-[0.98] sm:px-5 sm:text-base ${
-                  seleccionada
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm shadow-emerald-100'
-                    : 'border-neutral-200 bg-white text-neutral-700 hover:border-emerald-300 hover:bg-emerald-50/40'
-                }`}
-              >
-                <span>{opcion.label}</span>
-                <span
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors ${
-                    seleccionada ? 'bg-emerald-500 text-white' : 'bg-transparent text-transparent'
+              <div key={opcion.id} className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  aria-pressed={seleccionada}
+                  onClick={() => onChange(opcion.id)}
+                  className={`flex items-center justify-between gap-3 rounded-2xl border-2 px-4 py-3 text-left text-[15px] leading-snug transition-all active:scale-[0.98] sm:px-5 sm:text-base ${
+                    seleccionada
+                      ? 'border-emerald-500 bg-emerald-50 text-emerald-900 shadow-sm shadow-emerald-100'
+                      : 'border-neutral-200 bg-white text-neutral-700 hover:border-emerald-300 hover:bg-emerald-50/40'
                   }`}
                 >
-                  <CheckIcon className="h-5 w-5 shrink-0" />
-                </span>
-              </button>
+                  <span>{opcion.label}</span>
+                  <span
+                    className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors ${
+                      seleccionada ? 'bg-emerald-500 text-white' : 'bg-transparent text-transparent'
+                    }`}
+                  >
+                    <CheckIcon className="h-5 w-5 shrink-0" />
+                  </span>
+                </button>
+                {opcion.permiteEspecificar && seleccionada && (
+                  <input
+                    type="text"
+                    value={valorOtro ?? ''}
+                    onChange={(e) => onChangeOtro?.(e.target.value)}
+                    placeholder="¿Cuál?"
+                    autoFocus
+                    className="ml-2 rounded-xl border-2 border-emerald-200 bg-white px-4 py-2.5 text-sm text-neutral-800 outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
+                  />
+                )}
+              </div>
             );
           })}
         </div>
