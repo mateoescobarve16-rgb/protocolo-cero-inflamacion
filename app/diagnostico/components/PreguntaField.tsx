@@ -13,9 +13,16 @@ interface PreguntaFieldProps {
 export function PreguntaField({ pregunta, valor, onChange, error }: PreguntaFieldProps) {
   return (
     <div className="flex flex-col gap-3">
-      <h2 className="text-balance text-lg font-semibold leading-snug text-neutral-900 sm:text-2xl">
-        {pregunta.texto}
-      </h2>
+      <div>
+        <h2 className="text-balance text-lg font-semibold leading-snug text-neutral-900 sm:text-2xl">
+          {pregunta.texto}
+        </h2>
+        {pregunta.tipo === 'multi' && (
+          <p className="mt-1.5 text-sm text-neutral-500">
+            Puedes seleccionar varias opciones. Toca <strong>Continuar</strong> cuando termines.
+          </p>
+        )}
+      </div>
 
       {pregunta.tipo === 'single' && (
         <div className="flex flex-col gap-2">

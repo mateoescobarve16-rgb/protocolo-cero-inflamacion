@@ -57,7 +57,7 @@ describe('generarReporte', () => {
       })
     );
     const texto = generarReporte(resultado);
-    expect(texto).toContain('componente secundario relacionado con el perfil C');
+    expect(texto).toContain('componente secundario relacionado con el patrón Metabólico');
   });
 
   it('agrega la nota de condición previa cuando aplica', () => {
@@ -94,5 +94,26 @@ describe('generarReporte', () => {
     const resultado = calcularPerfil(baseRespuestas({ p5: 'empeora' }));
     const texto = generarReporte(resultado);
     expect(texto).toContain('ha ido empeorando con el tiempo');
+  });
+
+  it('traduce las condiciones previas con guion bajo a su etiqueta legible', () => {
+    const resultado = calcularPerfil(baseRespuestas({ p21: ['resistencia_insulina'] }));
+    const texto = generarReporte(resultado);
+    expect(texto).toContain('Resistencia a la insulina, prediabetes o diabetes');
+    expect(texto).not.toContain('resistencia_insulina');
+  });
+
+  it('nunca expone la letra cruda del perfil en el texto del reporte', () => {
+    const resultado = calcularPerfil(
+      baseRespuestas({
+        p6: 'despues_almuerzo',
+        p7: 'estrenimiento_frecuente',
+        p8: 'todos_los_dias',
+        p14: 'cae_mediodia',
+        p16: 'dificultad_generalizada',
+      })
+    );
+    const texto = generarReporte(resultado);
+    expect(texto).not.toMatch(/perfil [A-E]\b/);
   });
 });

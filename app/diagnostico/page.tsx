@@ -7,7 +7,7 @@ import { nombreAmigablePerfil } from '@/lib/quiz/perfilLabels';
 import { PreguntaField } from './components/PreguntaField';
 import { DatosPersonalesForm } from './components/DatosPersonalesForm';
 import { HabitosGeneralesForm } from './components/HabitosGeneralesForm';
-import { ResultadoCarousel, type ResumenDiagnostico } from './components/ResultadoCarousel';
+import { ResultadoCompleto, type ResumenDiagnostico } from './components/ResultadoCompleto';
 import { ProgressBar } from './components/ProgressBar';
 import { iconoDePaso } from './components/pasoIconos';
 import { TransicionScreen, ProcesandoScreen, RevelacionScreen } from './components/CierreScreens';
@@ -29,6 +29,7 @@ interface ResultadoAPI {
   requiere_derivacion: boolean;
   nota_condicion_previa: boolean;
   perfil?: string;
+  puntajes?: Record<string, number>;
 }
 
 const TOTAL_PASOS = PASOS.length;
@@ -181,9 +182,15 @@ export default function DiagnosticoPage() {
         }
       : undefined;
 
+  const esResultado = etapa === 'resultado';
+
   return (
-    <main className="flex h-dvh flex-col items-center justify-center overflow-hidden bg-[var(--background)] px-4 py-4">
-      <div className="flex w-full max-w-md flex-col">
+    <main
+      className={`flex flex-col items-center bg-[var(--background)] px-4 py-6 ${
+        esResultado ? 'min-h-dvh' : 'h-dvh justify-center overflow-hidden py-4'
+      }`}
+    >
+      <div className={`flex w-full flex-col ${esResultado ? 'max-w-lg' : 'max-w-md'}`}>
         {(etapa === 'pregunta' || etapa === 'tip') && (
           <ProgressBar pasoActual={pasoIndex + 1} totalPasos={TOTAL_PASOS} />
         )}
@@ -326,10 +333,12 @@ export default function DiagnosticoPage() {
         )}
 
         {etapa === 'resultado' && resultado && (
-          <ResultadoCarousel
+          <ResultadoCompleto
             reporteTexto={resultado.reporte_texto}
             requiereDerivacion={resultado.requiere_derivacion}
             resumen={resumen}
+            puntajes={resultado.puntajes}
+            perfil={resultado.perfil}
           />
         )}
 

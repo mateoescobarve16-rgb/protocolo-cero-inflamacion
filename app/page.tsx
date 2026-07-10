@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { ResultadoCarousel } from './diagnostico/components/ResultadoCarousel';
+import { ResultadoCompleto } from './diagnostico/components/ResultadoCompleto';
 import { ArrowRightIcon, EnvelopeIcon } from './diagnostico/components/Icons';
 
 type Vista = 'inicio' | 'buscando-email' | 'buscando' | 'encontrado' | 'no-encontrado' | 'error';
@@ -42,7 +42,7 @@ export default function Home() {
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center bg-[var(--background)] px-6 py-10 text-center">
-      <div className="w-full max-w-md">
+      <div className={`w-full ${vista === 'encontrado' ? 'max-w-lg' : 'max-w-md'}`}>
         {vista === 'inicio' && (
           <div className="flex flex-col items-center gap-5 rounded-3xl border border-emerald-100 bg-white p-10 shadow-xl shadow-emerald-900/5">
             <span className="rounded-full bg-emerald-100 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-700">
@@ -125,7 +125,7 @@ export default function Home() {
         )}
 
         {vista === 'encontrado' && resultado && (
-          <ResultadoCarousel
+          <ResultadoCompleto
             reporteTexto={resultado.reporte_texto}
             requiereDerivacion={resultado.requiere_derivacion}
           />

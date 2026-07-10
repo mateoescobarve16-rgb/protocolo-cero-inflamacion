@@ -224,7 +224,7 @@ export const PREGUNTAS: Record<string, Pregunta> = {
   },
   p20: {
     id: 'p20',
-    texto: 'Si aplica, ¿tus síntomas cambian con tu ciclo?',
+    texto: 'Si aplica, ¿tus síntomas cambian con tu ciclo menstrual?',
     tipo: 'single',
     opciones: [
       { id: 'empeora_con_ciclo', label: 'Sí, empeoran antes o durante mi periodo' },

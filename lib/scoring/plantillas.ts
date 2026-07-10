@@ -1,3 +1,5 @@
+import { etiquetaOpcion } from '../quiz/preguntas';
+import { nombreAmigablePerfil } from '../quiz/perfilLabels';
 import type { DatosReporte, ResultadoPerfil } from './tipos';
 
 type PlantillaFn = (d: DatosReporte) => string;
@@ -111,14 +113,14 @@ Por favor prioriza esa consulta antes de continuar.`,
 
 function construirNotaCondicionPrevia(condiciones: string[], embarazoLactancia: string): string {
   if (condiciones.length === 0 && embarazoLactancia === 'no') return '';
-  const items = [...condiciones];
-  if (embarazoLactancia !== 'no') items.push(embarazoLactancia);
+  const items = condiciones.map((c) => etiquetaOpcion('p21', c));
+  if (embarazoLactancia !== 'no') items.push(etiquetaOpcion('p22', embarazoLactancia));
   return `\n\nComo nos compartiste que tienes ${items.join(', ')}, te recomendamos aplicar este protocolo en conjunto con tu médico, para asegurarnos de que todo se maneje de forma segura y coordinada.`;
 }
 
 function construirNotaHibrido(perfilSecundario: string | null): string {
   if (!perfilSecundario) return '';
-  return `\n\nTambién notamos un componente secundario relacionado con el perfil ${perfilSecundario} — vale la pena tenerlo presente mientras avanzas.`;
+  return `\n\nTambién notamos un componente secundario relacionado con el patrón ${nombreAmigablePerfil(perfilSecundario)} — vale la pena tenerlo presente mientras avanzas.`;
 }
 
 export function generarReporte(resultado: ResultadoPerfil): string {
