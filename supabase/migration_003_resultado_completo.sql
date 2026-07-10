@@ -6,6 +6,11 @@
 -- de puntajes, gauges de agua/sueño) que se muestra justo al terminar el cuestionario,
 -- en vez de un texto plano sin formato.
 
+-- Postgres no permite cambiar el tipo de retorno de una función existente con
+-- "create or replace" (el shape de columnas de migration_002 era distinto) — hay que
+-- borrarla primero.
+drop function if exists public.obtener_ultimo_diagnostico(text);
+
 create or replace function public.obtener_ultimo_diagnostico(p_email text)
 returns table (
   reporte_texto text,
