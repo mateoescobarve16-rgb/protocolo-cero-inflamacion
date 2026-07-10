@@ -8,6 +8,7 @@ import { PreguntaField } from './components/PreguntaField';
 import { DatosPersonalesForm } from './components/DatosPersonalesForm';
 import { HabitosGeneralesForm } from './components/HabitosGeneralesForm';
 import { ResultadoCompleto, type ResumenDiagnostico } from './components/ResultadoCompleto';
+import type { SeccionReporte } from '@/lib/scoring/tipos';
 import { ProgressBar } from './components/ProgressBar';
 import { iconoDePaso } from './components/pasoIconos';
 import { TransicionScreen, ProcesandoScreen, RevelacionScreen } from './components/CierreScreens';
@@ -26,6 +27,7 @@ type Etapa =
 
 interface ResultadoAPI {
   reporte_texto: string;
+  secciones?: SeccionReporte[];
   nota_condicion_previa: boolean;
   perfil?: string;
   puntajes?: Record<string, number>;
@@ -340,6 +342,7 @@ export default function DiagnosticoPage() {
         {etapa === 'resultado' && resultado && (
           <ResultadoCompleto
             reporteTexto={resultado.reporte_texto}
+            secciones={resultado.secciones}
             nombre={nombre}
             resumen={resumen}
             puntajes={resultado.puntajes}

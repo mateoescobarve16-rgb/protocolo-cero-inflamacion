@@ -18,16 +18,17 @@ export async function POST(req: NextRequest) {
 
   const respuestas = body as Respuestas;
   const resultado = calcularPerfil(respuestas);
-  const reporte_texto = generarReporte(resultado);
+  const reporte = generarReporte(resultado);
 
   try {
-    await guardarResultado(respuestas, resultado, reporte_texto);
+    await guardarResultado(respuestas, resultado, reporte.texto);
   } catch (error) {
     console.error('No se pudo guardar el diagnóstico en Supabase:', error);
   }
 
   return NextResponse.json({
-    reporte_texto,
+    reporte_texto: reporte.texto,
+    secciones: reporte.secciones,
     nota_condicion_previa: resultado.nota_condicion_previa,
     perfil: resultado.perfil,
     puntajes: resultado.puntajes,

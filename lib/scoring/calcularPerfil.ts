@@ -9,9 +9,17 @@ function unirNatural(items: string[]): string {
   return `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`;
 }
 
+/** Normaliza texto libre escrito por la usuaria: sin espacios de más ni mayúsculas al azar (ej. "MaNi" -> "mani"). */
+function normalizarTextoLibre(texto: string): string {
+  return texto.trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
 /** Traduce un disparador de p9 a texto: si es "otro_disparador", usa lo que la usuaria escribió. */
 function etiquetaDisparador(id: string, p9Otro: string | undefined): string {
-  if (id === 'otro_disparador') return p9Otro?.trim() || 'un alimento específico';
+  if (id === 'otro_disparador') {
+    const normalizado = p9Otro ? normalizarTextoLibre(p9Otro) : '';
+    return normalizado || 'un alimento específico';
+  }
   return etiquetaOpcion('p9', id);
 }
 

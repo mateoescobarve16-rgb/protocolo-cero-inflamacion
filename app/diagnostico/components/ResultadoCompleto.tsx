@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { PREGUNTAS } from '@/lib/quiz/preguntas';
 import { nombreAmigablePerfil } from '@/lib/quiz/perfilLabels';
+import type { SeccionReporte } from '@/lib/scoring/tipos';
 import {
   ActivityIcon,
   ArrowRightIcon,
@@ -22,6 +23,7 @@ export interface ResumenDiagnostico {
 
 interface ResultadoCompletoProps {
   reporteTexto: string;
+  secciones?: SeccionReporte[];
   nombre?: string;
   resumen?: ResumenDiagnostico;
   puntajes?: Record<string, number>;
@@ -58,6 +60,12 @@ function analizarParrafo(texto: string, esPrimero: boolean) {
   if (esPrimero) return { Icono: SparklesIcon, tono: 'ok' as const };
   if (t.includes('fase') || t.includes('protocolo completo')) return { Icono: HeartIcon, tono: 'ok' as const };
   return { Icono: ActivityIcon, tono: 'ok' as const };
+}
+
+function iconoDeSeccion(titulo: string) {
+  if (titulo === 'Qué te recomendamos') return HeartIcon;
+  if (titulo === 'Notas adicionales') return SunIcon;
+  return SparklesIcon;
 }
 
 const PERFILES_ORDEN = ['A', 'B', 'C', 'D', 'E'] as const;
@@ -153,8 +161,22 @@ function GaugeCampo({ preguntaId, valorId }: { preguntaId: string; valorId: stri
   );
 }
 
+/** Un párrafo dentro de una sección: normal, salvo la nota de coordinar con médico, que se resalta aparte. */
+function ParrafoDeSeccion({ texto }: { texto: string }) {
+  const esNotaMedica = texto.toLowerCase().includes('en conjunto con tu médico');
+  if (esNotaMedica) {
+    return (
+      <p className="rounded-2xl border border-amber-200 bg-amber-50 p-4 leading-relaxed text-amber-900">
+        {renderConNegritas(texto)}
+      </p>
+    );
+  }
+  return <p className="leading-relaxed text-neutral-700">{renderConNegritas(texto)}</p>;
+}
+
 export function ResultadoCompleto({
   reporteTexto,
+  secciones,
   nombre,
   resumen,
   puntajes,
@@ -162,7 +184,7 @@ export function ResultadoCompleto({
   aguaId,
   suenoId,
 }: ResultadoCompletoProps) {
-  const parrafos = reporteTexto.split('\n\n').filter(Boolean);
+  const parrafosPlanos = reporteTexto.split('\n\n').filter(Boolean);
   const dominantes = perfil ? perfil.split('+') : [];
 
   const filasResumen = resumen
@@ -261,32 +283,58 @@ export function ResultadoCompleto({
         </div>
       )}
 
-      <div className="flex flex-col gap-4">
-        {parrafos.map((parrafo, i) => {
-          const { Icono, tono } = analizarParrafo(parrafo, i === 0);
-          return (
-            <div
-              key={i}
-              className={`flex gap-3 rounded-3xl border p-5 shadow-md sm:p-6 ${
-                tono === 'alerta' ? 'border-amber-200 bg-amber-50' : 'border-emerald-100 bg-white'
-              }`}
-            >
-              <span
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white ${
-                  tono === 'alerta'
-                    ? 'bg-gradient-to-br from-amber-400 to-amber-600'
-                    : 'bg-gradient-to-br from-emerald-400 to-emerald-600'
+      {secciones ? (
+        <div className="flex flex-col gap-4">
+          {secciones.map((seccion) => {
+            const Icono = iconoDeSeccion(seccion.titulo);
+            return (
+              <div
+                key={seccion.titulo}
+                className="flex flex-col gap-3 rounded-3xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-900/5 sm:p-8"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-white">
+                    <Icono className="h-5 w-5" />
+                  </span>
+                  <h2 className="text-lg font-bold text-neutral-900">{seccion.titulo}</h2>
+                </div>
+                <div className="flex flex-col gap-3">
+                  {seccion.parrafos.map((parrafo, i) => (
+                    <ParrafoDeSeccion key={i} texto={parrafo} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {parrafosPlanos.map((parrafo, i) => {
+            const { Icono, tono } = analizarParrafo(parrafo, i === 0);
+            return (
+              <div
+                key={i}
+                className={`flex gap-3 rounded-3xl border p-5 shadow-md sm:p-6 ${
+                  tono === 'alerta' ? 'border-amber-200 bg-amber-50' : 'border-emerald-100 bg-white'
                 }`}
               >
-                <Icono className="h-5 w-5" />
-              </span>
-              <p className="whitespace-pre-line pt-1.5 text-left leading-relaxed text-neutral-700">
-                {renderConNegritas(parrafo)}
-              </p>
-            </div>
-          );
-        })}
-      </div>
+                <span
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-white ${
+                    tono === 'alerta'
+                      ? 'bg-gradient-to-br from-amber-400 to-amber-600'
+                      : 'bg-gradient-to-br from-emerald-400 to-emerald-600'
+                  }`}
+                >
+                  <Icono className="h-5 w-5" />
+                </span>
+                <p className="whitespace-pre-line pt-1.5 text-left leading-relaxed text-neutral-700">
+                  {renderConNegritas(parrafo)}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <Link
         href="/"

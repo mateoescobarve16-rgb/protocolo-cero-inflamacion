@@ -47,3 +47,15 @@ export interface ResultadoPerfil {
   embarazo_lactancia: string;
   contexto: DatosReporte;
 }
+
+export interface SeccionReporte {
+  titulo: string;
+  parrafos: string[];
+}
+
+export interface Reporte {
+  /** Texto plano (párrafos separados por "\n\n"), tal como se guarda en Supabase. */
+  texto: string;
+  /** Los mismos párrafos agrupados por sección, para el render en tarjetas. */
+  secciones: SeccionReporte[];
+}

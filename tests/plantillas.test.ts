@@ -32,20 +32,27 @@ function baseRespuestas(overrides: Partial<Respuestas> = {}): Respuestas {
 }
 
 describe('generarReporte', () => {
-  it('incluye el nombre de la usuaria y el lenguaje del perfil A', () => {
+  it('usa el lenguaje del perfil A y no repite el nombre (ya está en el título de la UI)', () => {
     const resultado = calcularPerfil(baseRespuestas());
-    const texto = generarReporte(resultado);
-    expect(texto).toContain('María');
+    const { texto } = generarReporte(resultado);
     expect(texto).toContain('disbiosis');
+    expect(texto).not.toContain('Hola María');
   });
 
   it('nunca usa la palabra "diagnóstico" en el cuerpo del reporte', () => {
     const resultado = calcularPerfil(baseRespuestas());
-    const texto = generarReporte(resultado);
+    const { texto } = generarReporte(resultado);
     expect(texto.toLowerCase()).not.toContain('diagnóstico');
   });
 
-  it('agrega la nota de híbrido cuando hay perfil secundario', () => {
+  it('agrupa el reporte en secciones "Tu patrón principal" y "Qué te recomendamos"', () => {
+    const resultado = calcularPerfil(baseRespuestas());
+    const { secciones } = generarReporte(resultado);
+    expect(secciones.map((s) => s.titulo)).toEqual(['Tu patrón principal', 'Qué te recomendamos']);
+    expect(secciones[0].parrafos.length).toBeGreaterThan(0);
+  });
+
+  it('agrega una sección "Notas adicionales" cuando hay perfil secundario', () => {
     const resultado = calcularPerfil(
       baseRespuestas({
         p6: 'despues_almuerzo',
@@ -55,43 +62,47 @@ describe('generarReporte', () => {
         p16: 'dificultad_generalizada',
       })
     );
-    const texto = generarReporte(resultado);
-    expect(texto).toContain('componente secundario relacionado con el patrón Metabólico');
+    const { texto, secciones } = generarReporte(resultado);
+    expect(texto).toContain('componente secundario relacionado con el patrón **Metabólico**');
+    const notas = secciones.find((s) => s.titulo === 'Notas adicionales');
+    expect(notas?.parrafos[0]).toContain('componente secundario');
   });
 
-  it('agrega la nota de condición previa cuando aplica', () => {
+  it('agrega la nota de condición previa cuando aplica, dentro de "Notas adicionales"', () => {
     const resultado = calcularPerfil(baseRespuestas({ p22: 'embarazo' }));
-    const texto = generarReporte(resultado);
+    const { texto, secciones } = generarReporte(resultado);
     expect(texto).toContain('en conjunto con tu médico');
+    const notas = secciones.find((s) => s.titulo === 'Notas adicionales');
+    expect(notas).toBeDefined();
   });
 
   it('agrega la nota de hidratación cuando el consumo de agua es bajo', () => {
     const resultado = calcularPerfil(baseRespuestas({ p12: 'menos_1L' }));
-    const texto = generarReporte(resultado);
-    expect(texto).toContain('consumo de agua está por debajo de lo recomendado');
+    const { texto } = generarReporte(resultado);
+    expect(texto).toContain('tu consumo de agua está por debajo de lo recomendado');
   });
 
   it('no agrega la nota de hidratación cuando el consumo de agua es adecuado', () => {
     const resultado = calcularPerfil(baseRespuestas({ p12: '1.5_a_2.5L' }));
-    const texto = generarReporte(resultado);
+    const { texto } = generarReporte(resultado);
     expect(texto).not.toContain('consumo de agua está por debajo de lo recomendado');
   });
 
   it('agrega la nota de alcohol cuando el consumo es frecuente', () => {
     const resultado = calcularPerfil(baseRespuestas({ p13: '3_mas_semana' }));
-    const texto = generarReporte(resultado);
+    const { texto } = generarReporte(resultado);
     expect(texto).toContain('El alcohol que reportaste también suma carga');
   });
 
   it('referencia cómo ha evolucionado el síntoma en el cuerpo del reporte', () => {
     const resultado = calcularPerfil(baseRespuestas({ p5: 'empeora' }));
-    const texto = generarReporte(resultado);
-    expect(texto).toContain('ha ido empeorando con el tiempo');
+    const { texto } = generarReporte(resultado);
+    expect(texto).toContain('ha ido empeorando');
   });
 
   it('une varios síntomas principales en una frase natural cuando p3 es multi-select', () => {
     const resultado = calcularPerfil(baseRespuestas({ p3: ['hinchazon_abdominal', 'cansancio'] }));
-    const texto = generarReporte(resultado);
+    const { texto } = generarReporte(resultado);
     expect(texto).toContain('Hinchazón / abdomen inflado y Cansancio constante');
   });
 
@@ -99,13 +110,13 @@ describe('generarReporte', () => {
     const resultado = calcularPerfil(
       baseRespuestas({ p14: 'cae_mediodia', p16: 'dificultad_generalizada' })
     );
-    const texto = generarReporte(resultado);
+    const { texto } = generarReporte(resultado);
     expect(texto.toLowerCase()).not.toContain('bajar de peso');
   });
 
   it('traduce las condiciones previas con guion bajo a su etiqueta legible', () => {
     const resultado = calcularPerfil(baseRespuestas({ p21: ['resistencia_insulina'] }));
-    const texto = generarReporte(resultado);
+    const { texto } = generarReporte(resultado);
     expect(texto).toContain('Resistencia a la insulina, prediabetes o diabetes');
     expect(texto).not.toContain('resistencia_insulina');
   });
@@ -114,8 +125,8 @@ describe('generarReporte', () => {
     const resultado = calcularPerfil(
       baseRespuestas({ p9: ['otro_disparador'], p9_otro: 'maní', p10: 'otro' })
     );
-    const texto = generarReporte(resultado);
-    expect(texto).toContain('especialmente relacionado con maní');
+    const { texto } = generarReporte(resultado);
+    expect(texto).toContain('especialmente relacionado con **maní**');
   });
 
   it('nunca expone la letra cruda del perfil en el texto del reporte', () => {
@@ -128,7 +139,7 @@ describe('generarReporte', () => {
         p16: 'dificultad_generalizada',
       })
     );
-    const texto = generarReporte(resultado);
+    const { texto } = generarReporte(resultado);
     expect(texto).not.toMatch(/perfil [A-E]\b/);
   });
 });
