@@ -132,24 +132,36 @@ function GaugeCampo({ preguntaId, valorId }: { preguntaId: string; valorId: stri
   const opciones = PREGUNTAS[preguntaId].opciones ?? [];
   const indice = opciones.findIndex((o) => o.id === valorId);
   const zonaOptima = preguntaId === 'p12' ? ZONA_OPTIMA_AGUA : ZONA_OPTIMA_SUENO;
+  const pct = indice >= 0 ? ((indice + 0.5) / opciones.length) * 100 : 0;
+  const pctEtiqueta = Math.min(85, Math.max(15, pct));
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex h-2.5 w-full overflow-hidden rounded-full">
+    <div className="flex flex-col gap-1">
+      {indice >= 0 && (
+        <div className="relative h-6">
+          <div
+            className="absolute top-0 -translate-x-1/2 whitespace-nowrap rounded-full bg-neutral-800 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow"
+            style={{ left: `${pctEtiqueta}%` }}
+          >
+            Tú: {opciones[indice]?.label}
+          </div>
+        </div>
+      )}
+      <div className="relative flex h-2.5 w-full overflow-hidden rounded-full">
         {opciones.map((o) => (
           <div
             key={o.id}
             className={`flex-1 border-l-2 border-white first:border-l-0 ${
               zonaOptima.includes(o.id) ? 'bg-emerald-400' : 'bg-amber-300'
-            }`}
+            } ${o.id === valorId ? 'ring-2 ring-inset ring-neutral-800' : ''}`}
           />
         ))}
       </div>
       {indice >= 0 && (
-        <div className="relative h-3">
+        <div className="relative h-2">
           <div
-            className="absolute top-0 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-white bg-neutral-800 shadow"
-            style={{ left: `${((indice + 0.5) / opciones.length) * 100}%` }}
+            className="absolute top-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-neutral-800 shadow"
+            style={{ left: `${pct}%` }}
           />
         </div>
       )}

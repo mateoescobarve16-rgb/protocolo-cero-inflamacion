@@ -234,7 +234,7 @@ export default function DiagnosticoPage() {
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-emerald-900/10">
               <div
                 className="animate-barra-pausa h-full rounded-full bg-emerald-600"
-                style={{ animationDuration: '2000ms' }}
+                style={{ animationDuration: '3000ms' }}
                 onAnimationEnd={continuarDesdeTip}
               />
             </div>

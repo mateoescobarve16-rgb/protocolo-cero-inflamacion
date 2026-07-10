@@ -9,7 +9,7 @@ interface TransicionScreenProps {
   duracionMs?: number;
 }
 
-export function TransicionScreen({ nombre, onDone, duracionMs = 1800 }: TransicionScreenProps) {
+export function TransicionScreen({ nombre, onDone, duracionMs = 2800 }: TransicionScreenProps) {
   useEffect(() => {
     const t = setTimeout(onDone, duracionMs);
     return () => clearTimeout(t);
@@ -55,7 +55,7 @@ export function ProcesandoScreen({ nombre, listo, onDone }: ProcesandoScreenProp
 
   useEffect(() => {
     if (visibles >= PASOS_PROCESAMIENTO.length) return;
-    const t = setTimeout(() => setVisibles((v) => v + 1), 650);
+    const t = setTimeout(() => setVisibles((v) => v + 1), 900);
     return () => clearTimeout(t);
   }, [visibles]);
 
