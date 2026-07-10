@@ -27,7 +27,6 @@ function baseRespuestas(overrides: Partial<Respuestas> = {}): Respuestas {
     p20: 'no_relacion',
     p21: ['ninguna'],
     p22: 'no',
-    p23: ['ninguna'],
     ...overrides,
   };
 }
@@ -64,12 +63,6 @@ describe('generarReporte', () => {
     const resultado = calcularPerfil(baseRespuestas({ p22: 'embarazo' }));
     const texto = generarReporte(resultado);
     expect(texto).toContain('en conjunto con tu médico');
-  });
-
-  it('devuelve la plantilla de derivación médica para perfil F, sin depender del contexto', () => {
-    const resultado = calcularPerfil(baseRespuestas({ p23: ['dolor_severo'] }));
-    const texto = generarReporte(resultado);
-    expect(texto).toContain('consultes con un médico');
   });
 
   it('agrega la nota de hidratación cuando el consumo de agua es bajo', () => {
@@ -115,6 +108,14 @@ describe('generarReporte', () => {
     const texto = generarReporte(resultado);
     expect(texto).toContain('Resistencia a la insulina, prediabetes o diabetes');
     expect(texto).not.toContain('resistencia_insulina');
+  });
+
+  it('usa el texto libre de "otro" disparador en el reporte del perfil E', () => {
+    const resultado = calcularPerfil(
+      baseRespuestas({ p9: ['otro_disparador'], p9_otro: 'maní', p10: 'otro' })
+    );
+    const texto = generarReporte(resultado);
+    expect(texto).toContain('especialmente relacionado con maní');
   });
 
   it('nunca expone la letra cruda del perfil en el texto del reporte', () => {

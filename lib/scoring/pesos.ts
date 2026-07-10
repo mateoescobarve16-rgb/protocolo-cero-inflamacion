@@ -18,6 +18,5 @@ export const PESOS: Record<string, Record<string, MapaPesos>> = {
   p15: { resequedad: { A: 1, D: 1 }, brotes: { A: 1, D: 1 } },
 };
 
-export const SENALES_ALARMA = ['sangre_heces', 'dolor_severo', 'perdida_peso', 'fiebre'];
 export const UMBRAL_MINIMO = 4;
 export const DIFERENCIA_HIBRIDO = 2;

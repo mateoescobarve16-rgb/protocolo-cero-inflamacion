@@ -26,6 +26,5 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     encontrado: true,
     reporte_texto: fila.reporte_texto,
-    requiere_derivacion: fila.requiere_derivacion,
   });
 }

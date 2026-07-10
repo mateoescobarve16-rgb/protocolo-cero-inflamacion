@@ -3,6 +3,8 @@ export interface Opcion {
   label: string;
   /** Si se marca, deselecciona cualquier otra opción marcada en preguntas multi-select (ej. "Ninguna de las anteriores"). */
   exclusiva?: boolean;
+  /** Si se marca, muestra un campo de texto libre para que la persona especifique. */
+  permiteEspecificar?: boolean;
 }
 
 export type TipoPregunta = 'texto' | 'single' | 'multi';
@@ -111,6 +113,7 @@ export const PREGUNTAS: Record<string, Pregunta> = {
       { id: 'gaseosas', label: 'Alimentos con gas (gaseosas, cerveza)' },
       { id: 'grasas', label: 'Comidas grasosas o fritas' },
       { id: 'azucar', label: 'Azúcar / dulces' },
+      { id: 'otro_disparador', label: 'Otro (especifica)', permiteEspecificar: true },
       { id: 'ninguno', label: 'No identifico un disparador claro', exclusiva: true },
     ],
   },
@@ -254,18 +257,6 @@ export const PREGUNTAS: Record<string, Pregunta> = {
       { id: 'no', label: 'No' },
     ],
   },
-  p23: {
-    id: 'p23',
-    texto: '¿Has notado alguna de estas señales?',
-    tipo: 'multi',
-    opciones: [
-      { id: 'sangre_heces', label: 'Sangre en las heces' },
-      { id: 'dolor_severo', label: 'Dolor abdominal muy severo' },
-      { id: 'perdida_peso', label: 'Pérdida de peso sin explicación' },
-      { id: 'fiebre', label: 'Fiebre asociada a los síntomas' },
-      { id: 'ninguna', label: 'Ninguna de las anteriores', exclusiva: true },
-    ],
-  },
 };
 
 export const BLOQUES: Bloque[] = [
@@ -276,7 +267,6 @@ export const BLOQUES: Bloque[] = [
   { id: 'bloque-5', titulo: 'Energía, piel y retención', preguntaIds: ['p14', 'p15', 'p16'] },
   { id: 'bloque-6', titulo: 'Estrés y sueño', preguntaIds: ['p17', 'p18', 'p19', 'p20'] },
   { id: 'bloque-7', titulo: 'Condiciones de salud previas', preguntaIds: ['p21', 'p22'] },
-  { id: 'bloque-8', titulo: 'Señales de alarma', preguntaIds: ['p23'] },
 ];
 
 export const TODAS_LAS_PREGUNTAS_IDS = BLOQUES.flatMap((b) => b.preguntaIds);

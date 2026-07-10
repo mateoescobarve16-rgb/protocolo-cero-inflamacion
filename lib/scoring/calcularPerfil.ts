@@ -1,4 +1,4 @@
-import { PESOS, SENALES_ALARMA, UMBRAL_MINIMO, DIFERENCIA_HIBRIDO } from './pesos';
+import { PESOS, UMBRAL_MINIMO, DIFERENCIA_HIBRIDO } from './pesos';
 import { etiquetaOpcion } from '../quiz/preguntas';
 import type { PerfilLetra, Puntajes, Respuestas, ResultadoPerfil } from './tipos';
 
@@ -7,6 +7,12 @@ function unirNatural(items: string[]): string {
   if (items.length === 0) return '';
   if (items.length === 1) return items[0];
   return `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`;
+}
+
+/** Traduce un disparador de p9 a texto: si es "otro_disparador", usa lo que la usuaria escribió. */
+function etiquetaDisparador(id: string, p9Otro: string | undefined): string {
+  if (id === 'otro_disparador') return p9Otro?.trim() || 'un alimento específico';
+  return etiquetaOpcion('p9', id);
 }
 
 function puntajeP9(p9: string[], p10: string): Partial<Record<'A' | 'E', number>> {
@@ -21,10 +27,6 @@ function puntajeP9(p9: string[], p10: string): Partial<Record<'A' | 'E', number>
 
 /** Función pura y determinística: mismas respuestas siempre producen el mismo perfil. */
 export function calcularPerfil(respuestas: Respuestas): ResultadoPerfil {
-  if (respuestas.p23.some((v) => SENALES_ALARMA.includes(v))) {
-    return { perfil: 'F', requiere_derivacion: true, calculado: false };
-  }
-
   const condiciones = respuestas.p21.filter((v) => v !== 'ninguna');
   const nota_condicion_previa = condiciones.length > 0 || respuestas.p22 !== 'no';
 
@@ -81,14 +83,12 @@ export function calcularPerfil(respuestas: Respuestas): ResultadoPerfil {
     nota_condicion_previa,
     condiciones_marcadas: condiciones,
     embarazo_lactancia: respuestas.p22,
-    requiere_derivacion: false,
-    calculado: true,
     contexto: {
       nombre: respuestas.nombre,
       sintomaPrincipal: unirNatural(respuestas.p3.map((s) => etiquetaOpcion('p3', s))),
       tiempoSintoma: etiquetaOpcion('p4', respuestas.p4),
       evolucion: respuestas.p5,
-      disparadores: respuestas.p9.map((d) => etiquetaOpcion('p9', d)),
+      disparadores: respuestas.p9.map((d) => etiquetaDisparador(d, respuestas.p9_otro)),
       agua: respuestas.p12,
       alcohol: respuestas.p13,
     },

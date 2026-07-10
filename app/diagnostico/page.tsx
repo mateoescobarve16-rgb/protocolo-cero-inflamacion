@@ -26,7 +26,6 @@ type Etapa =
 
 interface ResultadoAPI {
   reporte_texto: string;
-  requiere_derivacion: boolean;
   nota_condicion_previa: boolean;
   perfil?: string;
   puntajes?: Record<string, number>;
@@ -162,7 +161,7 @@ export default function DiagnosticoPage() {
   }
 
   function alTerminarProcesamiento() {
-    setEtapa(resultado?.requiere_derivacion ? 'resultado' : 'revelado');
+    setEtapa('revelado');
   }
 
   function actualizarRespuesta(campoId: string, valor: ValorRespuesta, autoAvanzar = false) {
@@ -176,16 +175,15 @@ export default function DiagnosticoPage() {
 
   const nombre = (respuestas.nombre as string) ?? '';
 
-  const resumen: ResumenDiagnostico | undefined =
-    resultado && !resultado.requiere_derivacion
-      ? {
-          sintomaPrincipal: etiquetaResumenMulti('p3', respuestas.p3),
-          tiempoSintoma: etiquetaResumen('p4', respuestas.p4),
-          nivelEstres: etiquetaResumen('p17', respuestas.p17),
-          horasSueno: etiquetaResumen('p18', respuestas.p18),
-          patronDominante: resultado.perfil ? nombreAmigablePerfil(resultado.perfil) : '—',
-        }
-      : undefined;
+  const resumen: ResumenDiagnostico | undefined = resultado
+    ? {
+        sintomaPrincipal: etiquetaResumenMulti('p3', respuestas.p3),
+        tiempoSintoma: etiquetaResumen('p4', respuestas.p4),
+        nivelEstres: etiquetaResumen('p17', respuestas.p17),
+        horasSueno: etiquetaResumen('p18', respuestas.p18),
+        patronDominante: resultado.perfil ? nombreAmigablePerfil(resultado.perfil) : '—',
+      }
+    : undefined;
 
   const esResultado = etapa === 'resultado';
 
@@ -266,6 +264,8 @@ export default function DiagnosticoPage() {
                       PREGUNTAS[pasoActual.preguntaId].tipo === 'single'
                     )
                   }
+                  valorOtro={respuestas[`${pasoActual.preguntaId}_otro`] as string | undefined}
+                  onChangeOtro={(v) => actualizarRespuesta(`${pasoActual.preguntaId}_otro`, v)}
                   error={erroresCampos.includes(pasoActual.preguntaId)}
                 />
               </>
@@ -340,10 +340,12 @@ export default function DiagnosticoPage() {
         {etapa === 'resultado' && resultado && (
           <ResultadoCompleto
             reporteTexto={resultado.reporte_texto}
-            requiereDerivacion={resultado.requiere_derivacion}
+            nombre={nombre}
             resumen={resumen}
             puntajes={resultado.puntajes}
             perfil={resultado.perfil}
+            aguaId={respuestas.p12 as string | undefined}
+            suenoId={respuestas.p18 as string | undefined}
           />
         )}
 

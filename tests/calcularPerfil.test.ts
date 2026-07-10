@@ -26,7 +26,6 @@ function baseRespuestas(overrides: Partial<Respuestas> = {}): Respuestas {
     p20: 'no_relacion',
     p21: ['ninguna'],
     p22: 'no',
-    p23: ['ninguna'],
     ...overrides,
   };
 }
@@ -34,8 +33,6 @@ function baseRespuestas(overrides: Partial<Respuestas> = {}): Respuestas {
 describe('calcularPerfil', () => {
   it('devuelve perfil A por defecto cuando nadie llega al umbral mínimo de 4 puntos', () => {
     const resultado = calcularPerfil(baseRespuestas());
-    expect(resultado.calculado).toBe(true);
-    if (!resultado.calculado) return;
     expect(resultado.perfil).toBe('A');
     expect(resultado.es_hibrido).toBe(false);
   });
@@ -44,7 +41,6 @@ describe('calcularPerfil', () => {
     const resultado = calcularPerfil(
       baseRespuestas({ p6: 'despues_almuerzo', p7: 'estrenimiento_frecuente', p8: 'todos_los_dias' })
     );
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.perfil).toBe('A');
     expect(resultado.puntajes.A).toBe(5);
     expect(resultado.es_hibrido).toBe(false);
@@ -54,30 +50,26 @@ describe('calcularPerfil', () => {
     const resultado = calcularPerfil(
       baseRespuestas({ p17: 'muy_alto', p18: 'menos_5h', p19: 'irregular' })
     );
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.perfil).toBe('B');
     expect(resultado.puntajes.B).toBe(7);
   });
 
-  it('perfil C (metabólico) cuando la energía y el peso dominan', () => {
+  it('perfil C (metabólico) cuando la energía y la retención dominan', () => {
     const resultado = calcularPerfil(
       baseRespuestas({ p14: 'cae_mediodia', p16: 'dificultad_generalizada' })
     );
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.perfil).toBe('C');
     expect(resultado.puntajes.C).toBe(4);
   });
 
   it('perfil D (hormonal) cuando los síntomas cambian con el ciclo', () => {
     const resultado = calcularPerfil(baseRespuestas({ p20: 'empeora_con_ciclo', p15: 'resequedad' }));
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.perfil).toBe('D');
     expect(resultado.puntajes.D).toBe(4);
   });
 
   it('perfil E (intolerancia específica) cuando hay un solo disparador y diagnóstico confirmado', () => {
     const resultado = calcularPerfil(baseRespuestas({ p9: ['lacteos'], p10: 'intolerancia_lactosa' }));
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.perfil).toBe('E');
     expect(resultado.puntajes.E).toBe(6);
   });
@@ -86,23 +78,16 @@ describe('calcularPerfil', () => {
     const resultado = calcularPerfil(
       baseRespuestas({ p9: ['lacteos', 'gluten', 'azucar'], p6: 'despues_almuerzo' })
     );
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.perfil).toBe('A');
     expect(resultado.puntajes.A).toBe(4);
   });
 
-  it('perfil F (derivación médica) cuando hay señales de alarma, sin importar el resto de respuestas', () => {
+  it('cuenta el disparador "otro_disparador" igual que cualquier otro para el conteo de p9', () => {
     const resultado = calcularPerfil(
-      baseRespuestas({
-        p23: ['sangre_heces'],
-        p17: 'muy_alto',
-        p18: 'menos_5h',
-        p19: 'irregular',
-      })
+      baseRespuestas({ p9: ['otro_disparador'], p9_otro: 'maní', p10: 'otro' })
     );
-    expect(resultado.perfil).toBe('F');
-    expect(resultado.requiere_derivacion).toBe(true);
-    expect(resultado.calculado).toBe(false);
+    expect(resultado.perfil).toBe('E');
+    expect(resultado.contexto.disparadores).toEqual(['maní']);
   });
 
   it('detecta empate exacto como híbrido "A+B"', () => {
@@ -115,7 +100,6 @@ describe('calcularPerfil', () => {
         p18: '5_a_6h',
       })
     );
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.puntajes.A).toBe(5);
     expect(resultado.puntajes.B).toBe(5);
     expect(resultado.perfil).toBe('A+B');
@@ -132,7 +116,6 @@ describe('calcularPerfil', () => {
         p16: 'dificultad_generalizada',
       })
     );
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.puntajes.A).toBe(5);
     expect(resultado.puntajes.C).toBe(4);
     expect(resultado.perfil).toBe('A');
@@ -149,7 +132,6 @@ describe('calcularPerfil', () => {
         p21: ['hipotiroidismo'],
       })
     );
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.perfil).toBe('A');
     expect(resultado.nota_condicion_previa).toBe(true);
     expect(resultado.condiciones_marcadas).toEqual(['hipotiroidismo']);
@@ -157,7 +139,6 @@ describe('calcularPerfil', () => {
 
   it('activa nota_condicion_previa cuando hay embarazo o lactancia, aunque no haya condiciones marcadas', () => {
     const resultado = calcularPerfil(baseRespuestas({ p22: 'embarazo' }));
-    if (!resultado.calculado) throw new Error('esperaba resultado calculado');
     expect(resultado.nota_condicion_previa).toBe(true);
     expect(resultado.condiciones_marcadas).toEqual([]);
   });

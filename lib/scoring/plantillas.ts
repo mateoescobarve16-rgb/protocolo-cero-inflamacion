@@ -104,11 +104,6 @@ Te recomendamos prestar especial atención a la eliminación dirigida de ese ali
 El protocolo completo de 4 fases sigue siendo tu punto de partida — este perfil solo te ayuda a saber qué vigilar de cerca.`;
   },
 
-  F: () => `Gracias por completar el cuestionario.
-
-Algunas de tus respuestas indican que sería importante que consultes con un médico antes de iniciar cualquier protocolo nutricional. Esto no significa que algo esté necesariamente mal — es simplemente la recomendación responsable dado lo que nos compartiste.
-
-Por favor prioriza esa consulta antes de continuar.`,
 };
 
 function construirNotaCondicionPrevia(condiciones: string[], embarazoLactancia: string): string {
@@ -124,10 +119,6 @@ function construirNotaHibrido(perfilSecundario: string | null): string {
 }
 
 export function generarReporte(resultado: ResultadoPerfil): string {
-  if (!resultado.calculado) {
-    return PLANTILLAS.F(undefined as unknown as DatosReporte);
-  }
-
   const perfilBase = resultado.perfil.includes('+') ? resultado.perfil.split('+')[0] : resultado.perfil;
 
   let texto = PLANTILLAS[perfilBase](resultado.contexto);

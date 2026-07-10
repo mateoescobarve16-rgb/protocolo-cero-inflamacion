@@ -28,9 +28,8 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     reporte_texto,
-    requiere_derivacion: !resultado.calculado,
-    nota_condicion_previa: resultado.calculado ? resultado.nota_condicion_previa : false,
-    perfil: resultado.calculado ? resultado.perfil : undefined,
-    puntajes: resultado.calculado ? resultado.puntajes : undefined,
+    nota_condicion_previa: resultado.nota_condicion_previa,
+    perfil: resultado.perfil,
+    puntajes: resultado.puntajes,
   });
 }

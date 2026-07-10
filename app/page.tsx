@@ -9,7 +9,6 @@ type Vista = 'inicio' | 'buscando-email' | 'buscando' | 'encontrado' | 'no-encon
 
 interface ResultadoPlan {
   reporte_texto: string;
-  requiere_derivacion: boolean;
 }
 
 export default function Home() {
@@ -125,10 +124,7 @@ export default function Home() {
         )}
 
         {vista === 'encontrado' && resultado && (
-          <ResultadoCompleto
-            reporteTexto={resultado.reporte_texto}
-            requiereDerivacion={resultado.requiere_derivacion}
-          />
+          <ResultadoCompleto reporteTexto={resultado.reporte_texto} />
         )}
 
         {vista === 'error' && (

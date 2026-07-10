@@ -1,10 +1,11 @@
 import Link from 'next/link';
+import { PREGUNTAS } from '@/lib/quiz/preguntas';
 import { nombreAmigablePerfil } from '@/lib/quiz/perfilLabels';
 import {
   ActivityIcon,
-  AlertTriangleIcon,
   ArrowRightIcon,
   ClockIcon,
+  DropletIcon,
   HeartIcon,
   MoonIcon,
   SparklesIcon,
@@ -21,10 +22,12 @@ export interface ResumenDiagnostico {
 
 interface ResultadoCompletoProps {
   reporteTexto: string;
-  requiereDerivacion: boolean;
+  nombre?: string;
   resumen?: ResumenDiagnostico;
   puntajes?: Record<string, number>;
   perfil?: string;
+  aguaId?: string;
+  suenoId?: string;
 }
 
 const TINTES = {
@@ -48,10 +51,8 @@ function renderConNegritas(texto: string) {
   );
 }
 
-function analizarParrafo(texto: string, esPrimero: boolean, requiereDerivacion: boolean) {
+function analizarParrafo(texto: string, esPrimero: boolean) {
   const t = texto.toLowerCase();
-
-  if (requiereDerivacion) return { Icono: AlertTriangleIcon, tono: 'alerta' as const };
   if (t.includes('en conjunto con tu médico')) return { Icono: HeartIcon, tono: 'alerta' as const };
   if (t.includes('componente secundario')) return { Icono: SparklesIcon, tono: 'ok' as const };
   if (esPrimero) return { Icono: SparklesIcon, tono: 'ok' as const };
@@ -91,12 +92,75 @@ function GraficoPuntajes({ puntajes, dominantes }: { puntajes: Record<string, nu
   );
 }
 
+/** "Marcado" si el puntaje ganador es notoriamente alto; "moderado" en cualquier otro caso (incluye híbridos). */
+function textoIntensidad(puntajes: Record<string, number>, perfil: string): string {
+  const letras = perfil.split('+');
+  const maxScore = Math.max(...letras.map((l) => puntajes[l] ?? 0));
+  return maxScore >= 7
+    ? 'Es un patrón bastante marcado, no una señal aislada.'
+    : 'Es una señal presente, con espacio para otros factores en juego.';
+}
+
+const ZONA_OPTIMA_AGUA = ['1.5_a_2.5L', 'mas_2.5L'];
+const ZONA_OPTIMA_SUENO = ['7_a_8h', 'mas_8h'];
+
+const TIP_AGUA: Record<string, string> = {
+  menos_1L:
+    'Estás por debajo de lo recomendado. Empieza el día con un vaso grande de agua antes del café, y ten una botella siempre visible — subir de a poco es más sostenible que un cambio brusco.',
+  '1_a_1.5L': 'Vas por buen camino, pero aún puedes subir un poco. Prueba agregar un vaso más en la tarde.',
+  '1.5_a_2.5L': 'Tu hidratación está en un buen rango. Mantenla, especialmente los días que sientas más hinchazón.',
+  'mas_2.5L': 'Tu hidratación está en un excelente rango.',
+};
+
+const TIP_SUENO: Record<string, string> = {
+  menos_5h:
+    'Estás durmiendo menos de lo recomendado (7-9h). En vez de intentar dormir 2 horas más de golpe, prueba adelantar tu hora de dormir 20-30 minutos esta semana.',
+  '5_a_6h': 'Estás cerca del rango, pero aún corto. Prueba adelantar tu hora de dormir unos 20 minutos.',
+  '7_a_8h': 'Tus horas de sueño están en un buen rango. Enfócate en la calidad: evita pantallas 30 minutos antes de dormir.',
+  mas_8h: 'Duermes lo suficiente. Si aún sientes cansancio, puede valer la pena revisar la calidad del sueño con tu médico.',
+};
+
+function GaugeCampo({ preguntaId, valorId }: { preguntaId: string; valorId: string }) {
+  const opciones = PREGUNTAS[preguntaId].opciones ?? [];
+  const indice = opciones.findIndex((o) => o.id === valorId);
+  const zonaOptima = preguntaId === 'p12' ? ZONA_OPTIMA_AGUA : ZONA_OPTIMA_SUENO;
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex h-2.5 w-full overflow-hidden rounded-full">
+        {opciones.map((o) => (
+          <div
+            key={o.id}
+            className={`flex-1 border-l-2 border-white first:border-l-0 ${
+              zonaOptima.includes(o.id) ? 'bg-emerald-400' : 'bg-amber-300'
+            }`}
+          />
+        ))}
+      </div>
+      {indice >= 0 && (
+        <div className="relative h-3">
+          <div
+            className="absolute top-0 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-white bg-neutral-800 shadow"
+            style={{ left: `${((indice + 0.5) / opciones.length) * 100}%` }}
+          />
+        </div>
+      )}
+      <div className="flex justify-between text-[11px] text-neutral-400">
+        <span>{opciones[0]?.label}</span>
+        <span>{opciones[opciones.length - 1]?.label}</span>
+      </div>
+    </div>
+  );
+}
+
 export function ResultadoCompleto({
   reporteTexto,
-  requiereDerivacion,
+  nombre,
   resumen,
   puntajes,
   perfil,
+  aguaId,
+  suenoId,
 }: ResultadoCompletoProps) {
   const parrafos = reporteTexto.split('\n\n').filter(Boolean);
   const dominantes = perfil ? perfil.split('+') : [];
@@ -119,19 +183,12 @@ export function ResultadoCompleto({
 
   return (
     <div className="flex w-full flex-col gap-5 pb-10 text-left">
-      {requiereDerivacion ? (
-        <div className="flex flex-col items-center gap-3 rounded-3xl border border-amber-600 bg-gradient-to-br from-amber-400 to-amber-600 p-8 text-center text-white shadow-xl shadow-amber-900/20">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15">
-            <AlertTriangleIcon className="h-7 w-7" />
-          </span>
-          <h1 className="text-xl font-bold">Es importante que consultes con un médico</h1>
-        </div>
-      ) : (
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Tu reporte completo</h1>
-          <p className="text-neutral-500">Esto es lo que encontramos al cruzar tus respuestas.</p>
-        </div>
-      )}
+      <div>
+        <h1 className="text-2xl font-bold text-neutral-900">
+          {nombre ? `${nombre}, este es tu patrón funcional` : 'Tu patrón funcional'}
+        </h1>
+        <p className="text-neutral-500">Esto es lo que encontramos al cruzar tus respuestas.</p>
+      </div>
 
       {resumen && (
         <div className="flex flex-col gap-3 rounded-3xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-900/5 sm:p-8">
@@ -163,22 +220,50 @@ export function ResultadoCompleto({
         </div>
       )}
 
-      {puntajes && !requiereDerivacion && (
+      {puntajes && perfil && (
         <div className="flex flex-col gap-3 rounded-3xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-900/5 sm:p-8">
           <div>
             <h2 className="text-lg font-bold text-neutral-900">Cómo se distribuyen tus señales</h2>
             <p className="text-sm text-neutral-500">
               Cada patrón agrupa señales distintas — normalmente hay uno dominante, pero es común tener
-              rasgos de más de uno.
+              rasgos de más de uno. {textoIntensidad(puntajes, perfil)}
             </p>
           </div>
           <GraficoPuntajes puntajes={puntajes} dominantes={dominantes} />
         </div>
       )}
 
+      {(aguaId || suenoId) && (
+        <div className="flex flex-col gap-5 rounded-3xl border border-emerald-100 bg-white p-6 shadow-xl shadow-emerald-900/5 sm:p-8">
+          <h2 className="text-lg font-bold text-neutral-900">Recomendaciones rápidas</h2>
+
+          {aguaId && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
+                <DropletIcon className="h-4 w-4 text-indigo-500" />
+                Hidratación
+              </div>
+              <GaugeCampo preguntaId="p12" valorId={aguaId} />
+              <p className="text-sm text-neutral-600">{TIP_AGUA[aguaId]}</p>
+            </div>
+          )}
+
+          {suenoId && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
+                <MoonIcon className="h-4 w-4 text-indigo-500" />
+                Sueño
+              </div>
+              <GaugeCampo preguntaId="p18" valorId={suenoId} />
+              <p className="text-sm text-neutral-600">{TIP_SUENO[suenoId]}</p>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex flex-col gap-4">
         {parrafos.map((parrafo, i) => {
-          const { Icono, tono } = analizarParrafo(parrafo, i === 0, requiereDerivacion);
+          const { Icono, tono } = analizarParrafo(parrafo, i === 0);
           return (
             <div
               key={i}

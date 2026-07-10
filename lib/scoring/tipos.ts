@@ -11,6 +11,7 @@ export interface Respuestas {
   p7: string;
   p8: string;
   p9: string[];
+  p9_otro?: string;
   p10: string;
   p11: string;
   p12: string;
@@ -24,7 +25,6 @@ export interface Respuestas {
   p20: string;
   p21: string[];
   p22: string;
-  p23: string[];
 }
 
 export interface DatosReporte {
@@ -37,13 +37,7 @@ export interface DatosReporte {
   alcohol: string;
 }
 
-export interface ResultadoDerivacion {
-  perfil: 'F';
-  requiere_derivacion: true;
-  calculado: false;
-}
-
-export interface ResultadoCalculado {
+export interface ResultadoPerfil {
   perfil: string;
   perfil_secundario: string | null;
   es_hibrido: boolean;
@@ -51,9 +45,5 @@ export interface ResultadoCalculado {
   nota_condicion_previa: boolean;
   condiciones_marcadas: string[];
   embarazo_lactancia: string;
-  requiere_derivacion: false;
-  calculado: true;
   contexto: DatosReporte;
 }
-
-export type ResultadoPerfil = ResultadoDerivacion | ResultadoCalculado;
