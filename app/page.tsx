@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { ResultadoCompleto, type ResumenDiagnostico } from './diagnostico/components/ResultadoCompleto';
 import { ArrowRightIcon, EnvelopeIcon } from './diagnostico/components/Icons';
@@ -23,6 +23,13 @@ export default function Home() {
   const [vista, setVista] = useState<Vista>('inicio');
   const [email, setEmail] = useState('');
   const [resultado, setResultado] = useState<ResultadoPlan | null>(null);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('buscar')) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- enlace desde /diagnostico abre directo la búsqueda
+      setVista('buscando-email');
+    }
+  }, []);
 
   async function buscarPlan(e: FormEvent) {
     e.preventDefault();

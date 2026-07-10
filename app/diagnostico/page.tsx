@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { PREGUNTAS, etiquetaResumen, etiquetaResumenMulti } from '@/lib/quiz/preguntas';
 import { PASOS, IDS_HABITOS_GENERALES, tituloDePaso } from '@/lib/quiz/pasos';
 import { nombreAmigablePerfil } from '@/lib/quiz/perfilLabels';
@@ -211,6 +212,12 @@ export default function DiagnosticoPage() {
             >
               Comenzar
             </button>
+            <Link
+              href="/?buscar=1"
+              className="text-sm font-medium text-emerald-700 underline-offset-2 hover:underline"
+            >
+              ¿Ya lo hiciste? Ver mi resultado
+            </Link>
           </div>
         )}
 
