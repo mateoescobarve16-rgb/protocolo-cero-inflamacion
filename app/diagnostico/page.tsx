@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { PREGUNTAS, etiquetaOpcion } from '@/lib/quiz/preguntas';
+import { PREGUNTAS, etiquetaResumen, etiquetaResumenMulti } from '@/lib/quiz/preguntas';
 import { PASOS, IDS_HABITOS_GENERALES, tituloDePaso } from '@/lib/quiz/pasos';
 import { nombreAmigablePerfil } from '@/lib/quiz/perfilLabels';
 import { PreguntaField } from './components/PreguntaField';
@@ -54,16 +54,6 @@ function camposDelPaso(paso: (typeof PASOS)[number]): string[] {
   if (paso.tipo === 'datos-personales') return ['nombre', 'email'];
   if (paso.tipo === 'habitos-generales') return [...IDS_HABITOS_GENERALES];
   return [paso.preguntaId];
-}
-
-function etiquetaResumen(preguntaId: string, valor: unknown): string {
-  if (typeof valor !== 'string' || !valor) return '—';
-  return etiquetaOpcion(preguntaId, valor);
-}
-
-function etiquetaResumenMulti(preguntaId: string, valor: unknown): string {
-  if (!Array.isArray(valor) || valor.length === 0) return '—';
-  return valor.map((v) => etiquetaOpcion(preguntaId, v)).join(', ');
 }
 
 export default function DiagnosticoPage() {

@@ -2,13 +2,21 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { ResultadoCompleto } from './diagnostico/components/ResultadoCompleto';
+import { ResultadoCompleto, type ResumenDiagnostico } from './diagnostico/components/ResultadoCompleto';
 import { ArrowRightIcon, EnvelopeIcon } from './diagnostico/components/Icons';
+import type { SeccionReporte } from '@/lib/scoring/tipos';
 
 type Vista = 'inicio' | 'buscando-email' | 'buscando' | 'encontrado' | 'no-encontrado' | 'error';
 
 interface ResultadoPlan {
   reporte_texto: string;
+  secciones?: SeccionReporte[];
+  nombre?: string;
+  resumen?: ResumenDiagnostico;
+  puntajes?: Record<string, number>;
+  perfil?: string;
+  aguaId?: string;
+  suenoId?: string;
 }
 
 export default function Home() {
@@ -124,7 +132,16 @@ export default function Home() {
         )}
 
         {vista === 'encontrado' && resultado && (
-          <ResultadoCompleto reporteTexto={resultado.reporte_texto} />
+          <ResultadoCompleto
+            reporteTexto={resultado.reporte_texto}
+            secciones={resultado.secciones}
+            nombre={resultado.nombre}
+            resumen={resultado.resumen}
+            puntajes={resultado.puntajes}
+            perfil={resultado.perfil}
+            aguaId={resultado.aguaId}
+            suenoId={resultado.suenoId}
+          />
         )}
 
         {vista === 'error' && (

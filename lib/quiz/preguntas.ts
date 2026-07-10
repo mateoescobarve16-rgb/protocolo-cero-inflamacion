@@ -279,3 +279,15 @@ export function obtenerBloqueDePregunta(preguntaId: string): Bloque {
 export function etiquetaOpcion(preguntaId: string, valor: string): string {
   return PREGUNTAS[preguntaId]?.opciones?.find((o) => o.id === valor)?.label ?? valor;
 }
+
+/** Traduce una respuesta de single-select a su etiqueta, o "—" si no hay valor. */
+export function etiquetaResumen(preguntaId: string, valor: unknown): string {
+  if (typeof valor !== 'string' || !valor) return '—';
+  return etiquetaOpcion(preguntaId, valor);
+}
+
+/** Traduce una respuesta de multi-select a una lista legible, o "—" si no hay valores. */
+export function etiquetaResumenMulti(preguntaId: string, valor: unknown): string {
+  if (!Array.isArray(valor) || valor.length === 0) return '—';
+  return valor.map((v) => etiquetaOpcion(preguntaId, v)).join(', ');
+}
