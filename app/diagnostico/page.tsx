@@ -60,6 +60,11 @@ function etiquetaResumen(preguntaId: string, valor: unknown): string {
   return etiquetaOpcion(preguntaId, valor);
 }
 
+function etiquetaResumenMulti(preguntaId: string, valor: unknown): string {
+  if (!Array.isArray(valor) || valor.length === 0) return '—';
+  return valor.map((v) => etiquetaOpcion(preguntaId, v)).join(', ');
+}
+
 export default function DiagnosticoPage() {
   const [etapa, setEtapa] = useState<Etapa>('bienvenida');
   const [pasoIndex, setPasoIndex] = useState(0);
@@ -174,7 +179,7 @@ export default function DiagnosticoPage() {
   const resumen: ResumenDiagnostico | undefined =
     resultado && !resultado.requiere_derivacion
       ? {
-          sintomaPrincipal: etiquetaResumen('p3', respuestas.p3),
+          sintomaPrincipal: etiquetaResumenMulti('p3', respuestas.p3),
           tiempoSintoma: etiquetaResumen('p4', respuestas.p4),
           nivelEstres: etiquetaResumen('p17', respuestas.p17),
           horasSueno: etiquetaResumen('p18', respuestas.p18),

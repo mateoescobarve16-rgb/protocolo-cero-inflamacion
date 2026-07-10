@@ -2,6 +2,13 @@ import { PESOS, SENALES_ALARMA, UMBRAL_MINIMO, DIFERENCIA_HIBRIDO } from './peso
 import { etiquetaOpcion } from '../quiz/preguntas';
 import type { PerfilLetra, Puntajes, Respuestas, ResultadoPerfil } from './tipos';
 
+/** Une una lista en español natural: "X", "X y Y", o "X, Y y Z". */
+function unirNatural(items: string[]): string {
+  if (items.length === 0) return '';
+  if (items.length === 1) return items[0];
+  return `${items.slice(0, -1).join(', ')} y ${items[items.length - 1]}`;
+}
+
 function puntajeP9(p9: string[], p10: string): Partial<Record<'A' | 'E', number>> {
   const scores: Partial<Record<'A' | 'E', number>> = {};
   if (p9.length === 1 && p10 !== 'no_diagnosticada') {
@@ -78,7 +85,7 @@ export function calcularPerfil(respuestas: Respuestas): ResultadoPerfil {
     calculado: true,
     contexto: {
       nombre: respuestas.nombre,
-      sintomaPrincipal: etiquetaOpcion('p3', respuestas.p3),
+      sintomaPrincipal: unirNatural(respuestas.p3.map((s) => etiquetaOpcion('p3', s))),
       tiempoSintoma: etiquetaOpcion('p4', respuestas.p4),
       evolucion: respuestas.p5,
       disparadores: respuestas.p9.map((d) => etiquetaOpcion('p9', d)),

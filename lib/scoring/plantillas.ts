@@ -75,11 +75,11 @@ El protocolo completo de 4 fases es el mismo para todas; en tu caso, la clave ex
 
   C: (d) => `Hola ${d.nombre},
 
-Tu patrón principal tiene un componente **metabólico** notorio — la dificultad para bajar de peso y las caídas de energía durante el día suelen ir de la mano con este perfil.
+Tu patrón principal tiene un componente **metabólico** notorio — las caídas de energía durante el día y la sensación de hinchazón o retención suelen ir de la mano con este perfil.
 
-Llevas ${d.tiempoSintoma} con ${d.sintomaPrincipal}, y tu situación ${notaEvolucion(d.evolucion)}. Cuando la energía baja de forma predecible en el día y además cuesta bajar de peso a pesar de cuidarte, generalmente hay una base inflamatoria afectando cómo tu cuerpo procesa lo que comes, no solo cuánto comes.${notaHidratacion(d.agua)}${notaAlcohol(d.alcohol)}
+Llevas ${d.tiempoSintoma} con ${d.sintomaPrincipal}, y tu situación ${notaEvolucion(d.evolucion)}. Cuando la energía baja de forma predecible en el día y además notas hinchazón o retención sin que cambie mucho lo que comes, generalmente hay una base inflamatoria afectando cómo tu cuerpo procesa y elimina lo que consumes.${notaHidratacion(d.agua)}${notaAlcohol(d.alcohol)}
 
-El protocolo te va a ayudar con esa base inflamatoria, y es un excelente punto de partida antes de trabajar el componente metabólico con mayor profundidad.
+El protocolo te va a ayudar con esa base inflamatoria, que es el punto de partida antes de trabajar cualquier objetivo adicional con mayor profundidad.
 
 El protocolo completo de 4 fases es el mismo para todas — este perfil solo te ayuda a priorizar en qué fijarte primero.`,
 

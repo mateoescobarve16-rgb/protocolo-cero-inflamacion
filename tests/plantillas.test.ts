@@ -7,7 +7,7 @@ function baseRespuestas(overrides: Partial<Respuestas> = {}): Respuestas {
   return {
     nombre: 'María',
     email: 'maria@email.com',
-    p3: 'hinchazon_abdominal',
+    p3: ['hinchazon_abdominal'],
     p4: 'menos_1_mes',
     p5: 'se_mantiene_igual',
     p6: 'al_despertar',
@@ -94,6 +94,20 @@ describe('generarReporte', () => {
     const resultado = calcularPerfil(baseRespuestas({ p5: 'empeora' }));
     const texto = generarReporte(resultado);
     expect(texto).toContain('ha ido empeorando con el tiempo');
+  });
+
+  it('une varios síntomas principales en una frase natural cuando p3 es multi-select', () => {
+    const resultado = calcularPerfil(baseRespuestas({ p3: ['hinchazon_abdominal', 'cansancio'] }));
+    const texto = generarReporte(resultado);
+    expect(texto).toContain('Hinchazón / abdomen inflado y Cansancio constante');
+  });
+
+  it('nunca menciona "bajar de peso" en el perfil C (reencuadrado a energía/retención)', () => {
+    const resultado = calcularPerfil(
+      baseRespuestas({ p14: 'cae_mediodia', p16: 'dificultad_generalizada' })
+    );
+    const texto = generarReporte(resultado);
+    expect(texto.toLowerCase()).not.toContain('bajar de peso');
   });
 
   it('traduce las condiciones previas con guion bajo a su etiqueta legible', () => {

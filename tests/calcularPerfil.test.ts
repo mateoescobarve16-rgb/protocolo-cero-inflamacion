@@ -6,7 +6,7 @@ function baseRespuestas(overrides: Partial<Respuestas> = {}): Respuestas {
   return {
     nombre: 'María',
     email: 'maria@email.com',
-    p3: 'hinchazon_abdominal',
+    p3: ['hinchazon_abdominal'],
     p4: 'menos_1_mes',
     p5: 'se_mantiene_igual',
     p6: 'al_despertar',

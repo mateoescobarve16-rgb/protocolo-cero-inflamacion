@@ -37,14 +37,14 @@ export const PREGUNTAS: Record<string, Pregunta> = {
   p3: {
     id: 'p3',
     texto: '¿Cuál es el síntoma que más te molesta ahora mismo?',
-    tipo: 'single',
+    tipo: 'multi',
     opciones: [
       { id: 'hinchazon_abdominal', label: 'Hinchazón / abdomen inflado' },
       { id: 'gases_eructos', label: 'Gases y eructos frecuentes' },
       { id: 'cansancio', label: 'Cansancio constante' },
       { id: 'estrenimiento', label: 'Estreñimiento o tránsito irregular' },
       { id: 'piel_opaca', label: 'Piel opaca o resequedad' },
-      { id: 'dificultad_bajar_peso', label: 'Dificultad para bajar de peso' },
+      { id: 'dificultad_bajar_peso', label: 'Hinchazón o retención en zonas específicas' },
     ],
   },
   p4: {
@@ -181,12 +181,12 @@ export const PREGUNTAS: Record<string, Pregunta> = {
   },
   p16: {
     id: 'p16',
-    texto: '¿Te cuesta bajar de peso a pesar de cuidarte?',
+    texto: '¿Notas hinchazón o retención en alguna zona del cuerpo en particular?',
     tipo: 'single',
     opciones: [
       { id: 'zonas_especificas', label: 'Sí, en zonas específicas (abdomen, piernas)' },
       { id: 'dificultad_generalizada', label: 'Sí, de forma generalizada' },
-      { id: 'no_preocupa', label: 'No, no es algo que me preocupe' },
+      { id: 'no_preocupa', label: 'No, no es algo que note' },
     ],
   },
   p17: {
@@ -273,7 +273,7 @@ export const BLOQUES: Bloque[] = [
   { id: 'bloque-2', titulo: 'Síntoma principal y línea de tiempo', preguntaIds: ['p3', 'p4', 'p5'] },
   { id: 'bloque-3', titulo: 'Patrón digestivo', preguntaIds: ['p6', 'p7', 'p8'] },
   { id: 'bloque-4', titulo: 'Alimentación, disparadores y hábitos', preguntaIds: ['p9', 'p10', 'p11', 'p12', 'p13'] },
-  { id: 'bloque-5', titulo: 'Energía, piel y peso', preguntaIds: ['p14', 'p15', 'p16'] },
+  { id: 'bloque-5', titulo: 'Energía, piel y retención', preguntaIds: ['p14', 'p15', 'p16'] },
   { id: 'bloque-6', titulo: 'Estrés y sueño', preguntaIds: ['p17', 'p18', 'p19', 'p20'] },
   { id: 'bloque-7', titulo: 'Condiciones de salud previas', preguntaIds: ['p21', 'p22'] },
   { id: 'bloque-8', titulo: 'Señales de alarma', preguntaIds: ['p23'] },
