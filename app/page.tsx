@@ -54,6 +54,13 @@ export default function Home() {
     }
   }
 
+  function volverAlInicio() {
+    window.history.replaceState(null, '', '/');
+    setResultado(null);
+    setEmail('');
+    setVista('inicio');
+  }
+
   return (
     <main className="flex flex-1 flex-col items-center justify-center bg-[var(--background)] px-6 py-10 text-center">
       <div className={`w-full ${vista === 'encontrado' ? 'max-w-lg' : 'max-w-md'}`}>
@@ -148,6 +155,7 @@ export default function Home() {
             perfil={resultado.perfil}
             aguaId={resultado.aguaId}
             suenoId={resultado.suenoId}
+            onVolver={volverAlInicio}
           />
         )}
 

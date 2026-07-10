@@ -30,6 +30,8 @@ interface ResultadoCompletoProps {
   perfil?: string;
   aguaId?: string;
   suenoId?: string;
+  /** Si se provee, se usa en vez de navegar a "/" (para cuando este componente ya se renderiza dentro de "/"). */
+  onVolver?: () => void;
 }
 
 const TINTES = {
@@ -195,6 +197,7 @@ export function ResultadoCompleto({
   perfil,
   aguaId,
   suenoId,
+  onVolver,
 }: ResultadoCompletoProps) {
   const parrafosPlanos = reporteTexto.split('\n\n').filter(Boolean);
   const dominantes = perfil ? perfil.split('+') : [];
@@ -348,13 +351,24 @@ export function ResultadoCompleto({
         </div>
       )}
 
-      <Link
-        href="/"
-        className="mx-auto flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-3.5 font-semibold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-[0.98]"
-      >
-        Volver al inicio
-        <ArrowRightIcon className="h-4 w-4" />
-      </Link>
+      {onVolver ? (
+        <button
+          type="button"
+          onClick={onVolver}
+          className="mx-auto flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-3.5 font-semibold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-[0.98]"
+        >
+          Volver al inicio
+          <ArrowRightIcon className="h-4 w-4" />
+        </button>
+      ) : (
+        <Link
+          href="/"
+          className="mx-auto flex items-center gap-2 rounded-full bg-emerald-600 px-8 py-3.5 font-semibold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 active:scale-[0.98]"
+        >
+          Volver al inicio
+          <ArrowRightIcon className="h-4 w-4" />
+        </Link>
+      )}
     </div>
   );
 }
