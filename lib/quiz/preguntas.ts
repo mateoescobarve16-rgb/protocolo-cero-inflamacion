@@ -257,6 +257,42 @@ export const PREGUNTAS: Record<string, Pregunta> = {
       { id: 'no', label: 'No' },
     ],
   },
+  p24: {
+    id: 'p24',
+    texto: '¿Cómo describirías tu rutina la mayor parte del día?',
+    tipo: 'single',
+    opciones: [
+      { id: 'trabajo_sentado', label: 'Trabajo de oficina, la mayoría del tiempo sentada' },
+      { id: 'trabajo_movimiento', label: 'Trabajo de pie o en movimiento constante' },
+      { id: 'cuido_casa_hijos', label: 'Me dedico al cuidado de casa y/o hijos' },
+      { id: 'trabajo_remoto_flexible', label: 'Trabajo remoto o con horario flexible' },
+      { id: 'otra_rutina', label: 'Otra rutina', permiteEspecificar: true },
+    ],
+  },
+  p25: {
+    id: 'p25',
+    texto: '¿Has probado algo antes para manejar esto?',
+    tipo: 'multi',
+    opciones: [
+      { id: 'dietas_propias', label: 'Dietas o cambios alimenticios por mi cuenta' },
+      { id: 'suplementos', label: 'Suplementos o vitaminas' },
+      { id: 'ayuno', label: 'Ayuno intermitente' },
+      { id: 'consulta_profesional', label: 'Consulta con nutricionista o médico' },
+      { id: 'nada_aun', label: 'No he probado nada aún', exclusiva: true },
+    ],
+  },
+  p26: {
+    id: 'p26',
+    texto: '¿Qué te gustaría lograr con este protocolo?',
+    tipo: 'single',
+    opciones: [
+      { id: 'menos_molestias', label: 'Sentir menos hinchazón y molestias digestivas' },
+      { id: 'mas_energia', label: 'Tener más energía en el día a día' },
+      { id: 'entender_cuerpo', label: 'Entender por fin qué le pasa a mi cuerpo' },
+      { id: 'dejar_soluciones_temporales', label: 'Dejar de depender de soluciones temporales' },
+      { id: 'otra_motivacion', label: 'Otra cosa', permiteEspecificar: true },
+    ],
+  },
 };
 
 export const BLOQUES: Bloque[] = [
@@ -265,8 +301,8 @@ export const BLOQUES: Bloque[] = [
   { id: 'bloque-3', titulo: 'Patrón digestivo', preguntaIds: ['p6', 'p7', 'p8'] },
   { id: 'bloque-4', titulo: 'Alimentación, disparadores y hábitos', preguntaIds: ['p9', 'p10', 'p11', 'p12', 'p13'] },
   { id: 'bloque-5', titulo: 'Energía, piel y retención', preguntaIds: ['p14', 'p15', 'p16'] },
-  { id: 'bloque-6', titulo: 'Estrés y sueño', preguntaIds: ['p17', 'p18', 'p19', 'p20'] },
-  { id: 'bloque-7', titulo: 'Condiciones de salud previas', preguntaIds: ['p21', 'p22'] },
+  { id: 'bloque-6', titulo: 'Estrés y sueño', preguntaIds: ['p24', 'p17', 'p18', 'p19', 'p20'] },
+  { id: 'bloque-7', titulo: 'Condiciones de salud previas', preguntaIds: ['p25', 'p21', 'p22', 'p26'] },
 ];
 
 export const TODAS_LAS_PREGUNTAS_IDS = BLOQUES.flatMap((b) => b.preguntaIds);

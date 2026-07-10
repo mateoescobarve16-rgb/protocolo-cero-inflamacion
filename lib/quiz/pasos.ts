@@ -25,10 +25,13 @@ export const PASOS: Paso[] = [
   { tipo: 'pregunta', preguntaId: 'p14' },
   { tipo: 'pregunta', preguntaId: 'p15' },
   { tipo: 'pregunta', preguntaId: 'p16' },
+  { tipo: 'pregunta', preguntaId: 'p24' },
   { tipo: 'pregunta', preguntaId: 'p17' },
   { tipo: 'pregunta', preguntaId: 'p20' },
+  { tipo: 'pregunta', preguntaId: 'p25' },
   { tipo: 'pregunta', preguntaId: 'p21' },
   { tipo: 'pregunta', preguntaId: 'p22' },
+  { tipo: 'pregunta', preguntaId: 'p26' },
 ];
 
 export const IDS_HABITOS_GENERALES = ['p12', 'p13', 'p18', 'p19'] as const;

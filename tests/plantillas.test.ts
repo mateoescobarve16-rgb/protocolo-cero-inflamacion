@@ -27,6 +27,9 @@ function baseRespuestas(overrides: Partial<Respuestas> = {}): Respuestas {
     p20: 'no_relacion',
     p21: ['ninguna'],
     p22: 'no',
+    p24: 'trabajo_sentado',
+    p25: ['nada_aun'],
+    p26: 'entender_cuerpo',
     ...overrides,
   };
 }

@@ -26,6 +26,11 @@ export interface Respuestas {
   p20: string;
   p21: string[];
   p22: string;
+  p24: string;
+  p24_otro?: string;
+  p25: string[];
+  p26: string;
+  p26_otro?: string;
 }
 
 export interface DatosReporte {
