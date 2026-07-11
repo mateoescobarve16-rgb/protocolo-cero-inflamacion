@@ -76,7 +76,7 @@ const PLANTILLAS: Record<string, PlantillaFn> = {
       `Llevas **${d.tiempoSintoma}** con **${d.sintomaPrincipal}**, y tu situación ${notaEvolucion(d.evolucion)}. Cuando **el estrés se mantiene alto** y el sueño no alcanza a ser reparador, el sistema nervioso le manda señales constantes de alerta al intestino — y el intestino responde inflamándose, incluso si lo que comes es razonable.${notaAlcohol(d.alcohol)}`,
     ],
     queHacer: [
-      `Te recomendamos combinar el protocolo con los **hábitos de regulación del sistema nervioso** que encontrarás en la Clase 3 — respiración antes de comer, comer sin pantallas, y mantener horarios de sueño más consistentes.`,
+      `Te recomendamos combinar el protocolo con **hábitos de regulación del sistema nervioso** — respiración antes de comer, comer sin pantallas, y mantener horarios de sueño más consistentes.`,
       `El protocolo completo de 4 fases es el mismo para todas; en tu caso, la clave extra está en trabajar el estrés en paralelo a la alimentación.`,
     ],
   }),
