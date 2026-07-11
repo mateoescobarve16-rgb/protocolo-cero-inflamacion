@@ -51,6 +51,12 @@ const TIPS: Record<number, { titulo: (nombre: string) => string; cuerpo: string 
   },
 };
 
+/** Si la opción seleccionada pide texto libre ("otro"), no debe auto-avanzar: hay que darle tiempo a escribir. */
+function opcionRequiereEspecificar(preguntaId: string, valor: ValorRespuesta): boolean {
+  if (typeof valor !== 'string') return false;
+  return PREGUNTAS[preguntaId].opciones?.some((o) => o.id === valor && o.permiteEspecificar) ?? false;
+}
+
 function camposDelPaso(paso: (typeof PASOS)[number]): string[] {
   if (paso.tipo === 'datos-personales') return ['nombre', 'email'];
   if (paso.tipo === 'habitos-generales') return [...IDS_HABITOS_GENERALES];
@@ -260,7 +266,8 @@ export default function DiagnosticoPage() {
                     actualizarRespuesta(
                       pasoActual.preguntaId,
                       valor,
-                      PREGUNTAS[pasoActual.preguntaId].tipo === 'single'
+                      PREGUNTAS[pasoActual.preguntaId].tipo === 'single' &&
+                        !opcionRequiereEspecificar(pasoActual.preguntaId, valor)
                     )
                   }
                   valorOtro={respuestas[`${pasoActual.preguntaId}_otro`] as string | undefined}
